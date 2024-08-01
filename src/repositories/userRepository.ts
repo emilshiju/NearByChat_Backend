@@ -6,7 +6,7 @@ import locationModel from "../frameWorks/mongodb/models/userLocation";
 import AdminModel from "../frameWorks/mongodb/models/adminModel";
 import otpModel from "../frameWorks/mongodb/models/otpModel";
 import mongoose from "mongoose";
-import { ObjectId } from "mongodb";
+// import { ObjectId } from "mongoose";
 
 import Joi, { Err, string } from "joi";
 import bcrypt from "bcrypt";
@@ -112,7 +112,7 @@ export class UserRepository implements IUserRepository {
   //   console.log(nearbyUsers);
   //   console.log(nearbyUsers);
     // const id1 = data.userId;
-    const id2 = new ObjectId(data.userId as unknown as string);
+    const id2 = new mongoose.Types.ObjectId(data.userId as unknown as string);
     console.log(id2);
     let nearof = [];
     for (let i of nearbyUsers) {
