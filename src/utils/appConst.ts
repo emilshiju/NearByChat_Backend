@@ -5,7 +5,7 @@ export const INTERFACE_TYPE={
 
     
     UserController:Symbol.for("UserController"),
-    UserRepository:Symbol.for("userRepository"),
+    UserRepository:Symbol.for("UserRepository"),
     UserInteractor:Symbol.for("UserInteractor"),
     ProfileInteractor:Symbol.for("ProfileInteractor"),
     ProfileRepository:Symbol.for("ProfileRepository"),

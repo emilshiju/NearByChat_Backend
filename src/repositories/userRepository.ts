@@ -1,6 +1,7 @@
+import { injectable } from "inversify";
 import { User, findUser } from "../entities/user";
 import { IUserRepository } from "../interfaces/user/IUserRepository";
-import { injectable } from "inversify";
+
 import UserModel from "../frameWorks/mongodb/models/userModel";
 import locationModel from "../frameWorks/mongodb/models/userLocation";
 import AdminModel from "../frameWorks/mongodb/models/adminModel";
