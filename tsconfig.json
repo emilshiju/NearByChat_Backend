@@ -20,6 +20,12 @@
 
     "emitDecoratorMetadata": true,        
   },
+  
+   
+      "moduleResolution": "node",
+      "typeRoots": ["./node_modules/@types"]
+    
+  ,
   "include": [
     "src/**/*" // Adjust this to match your project structure
   ]
