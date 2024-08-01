@@ -11,7 +11,6 @@ import { Schema } from "mongoose";
 import { response } from "express";
 
 
-const SALT_ROUNDS = 10;
 @injectable()
 export class UserInteractor implements IUserInteractor{
     private repository:IUserRepository;
@@ -43,7 +42,8 @@ export class UserInteractor implements IUserInteractor{
             
         //     return false
         //   }
-
+          
+const SALT_ROUNDS = 10;
            console.log(SALT_ROUNDS)
            console.log(password)
           password = await bcrypt.hash(password, SALT_ROUNDS);
@@ -197,7 +197,8 @@ export class UserInteractor implements IUserInteractor{
 
 
   async IchangePassword(userId:string,password: string): Promise<any> {
-
+    
+const SALT_ROUNDS = 10;
 
     password = await bcrypt.hash(password, SALT_ROUNDS);
 

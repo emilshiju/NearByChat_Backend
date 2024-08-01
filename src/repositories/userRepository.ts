@@ -15,6 +15,7 @@ import paymentSummaryModel from "../frameWorks/mongodb/models/paymentSummary";
 import { response } from "express";
 
 @injectable()
+
 export class UserRepository implements IUserRepository {
   async create({ userName, dob, gender, email, password }: User): Promise<any> {
     const createdUser = await UserModel.create({
