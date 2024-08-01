@@ -31,11 +31,11 @@ const socketConfig=(io:Server)=>{
 
 
     let connectedClients: { [key: string]: any } = {};
-    let  readyForRandomConnection:any[] =[]
-      let matchedUsers:any[]=[]
+    let  readyForRandomConnection:string[] =[]
+      let matchedUsers:string[]=[]
 
-      let readyForOnlyRandomChat:any[]=[]
-      let alredyRandomChatting:any[]=[]
+      let readyForOnlyRandomChat:string[]=[]
+      let alredyRandomChatting:string[]=[]
 
 
      io.on('connection',(socket)=>{
