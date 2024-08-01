@@ -70,7 +70,7 @@ app.use(cors(corsOptions));
   
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-app.get('/sample',(req,res)=>{
+app.get('/sample',(req:Request,res:Response)=>{
     return res.json("messaegte")
 })
 
