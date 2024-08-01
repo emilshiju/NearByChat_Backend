@@ -265,9 +265,11 @@ export class userListRepository implements IUserListRepository{
             }
 
              console.log(regex)
+
+             
              const a:m[]=await reportModel.find({})
              .populate('reporter','nickName  email')
-             .populate('reportedUser','nickName  email')
+             .populate('reportedUser','nickName  email') as unknown as m[];
 
              console.log("alllllllllllllllllllllllllllll")
              console.log(a)
@@ -428,16 +430,16 @@ export class userListRepository implements IUserListRepository{
 
         // get users count
 
-        const  countAlluser=await UserModel.find({}).count()
+        const  countAlluser=await UserModel.countDocuments({});
 
         // get count of order
 
-        const countPayment=await paymentSummaryModel.find({}).count()
+        const countPayment=await paymentSummaryModel.countDocuments({});
 
 
         // get count of reports
 
-        const countReport=await reportModel.find({}).count()
+        const countReport=await reportModel.countDocuments({});
          
 
         // getCountOfusers joined  Weekely
