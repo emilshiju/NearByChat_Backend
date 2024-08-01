@@ -68,5 +68,6 @@ app.use(conversationRoute)
 // app.listen(port)
 
 
+console.log(`server start on ${port}`)
 server.listen(port)
 export default app
