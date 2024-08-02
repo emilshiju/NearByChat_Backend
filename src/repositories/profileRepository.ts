@@ -7,7 +7,7 @@ import notificationModel from "../frameWorks/mongodb/models/notificationModel";
 import mongoose,{Schema,model, Types} from "mongoose";
 import UserModel from "../frameWorks/mongodb/models/userModel";
 import SubscriptionModel from "../frameWorks/mongodb/models/subscriptionModel";
-import { messaging } from "../frameWorks/firebase/firebase";
+// import { messaging } from "../frameWorks/firebase/firebase";
 import { any } from "joi";
 import chatRoomModel from "../frameWorks/mongodb/models/chatRoomMode";
 import webpush from "web-push";
