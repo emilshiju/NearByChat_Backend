@@ -9,7 +9,7 @@ import profileRoute from "./routes/profileRoute"
 import adminRoute from "./routes/adminRoute"
 import conversationRoute from "./routes/conversation"
 
-import 'reflect-metadata';
+
 import cors from "cors"
 import http from "http"
 import socketIo from 'socket.io';

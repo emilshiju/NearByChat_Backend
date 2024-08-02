@@ -22,13 +22,17 @@ const upload = multer({storage:storage})
 
 const container=new Container()
 
-container
- .bind<IUserRepository>(INTERFACE_TYPE.UserRepository)
- .to(UserRepository)
+
 
 container
  .bind<IUserInteractor>(INTERFACE_TYPE.UserInteractor)
  .to(UserInteractor) 
+
+ container
+ .bind<IUserRepository>(INTERFACE_TYPE.UserRepository)
+ .to(UserRepository)
+
+ 
  
 container.bind(INTERFACE_TYPE.UserController).to(UserController)
 
