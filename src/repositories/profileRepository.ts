@@ -409,7 +409,11 @@ console.log("kkkkkkkk")
       { senderId: deleteReceiverId, receiverId: delteSenderId }
     ]})
     // @ts-ignore
-    findNotification?.message='both are unConnected'
+    // findNotification?.message='both are unConnected'
+    if (findNotification) {
+      findNotification.message = 'both are unConnected';
+    }
+    
     findNotification.save()
 
    
