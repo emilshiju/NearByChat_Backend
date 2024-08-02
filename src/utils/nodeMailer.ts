@@ -5,26 +5,29 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Ensure the required environment variables are available
-const {
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_MAIL,
-    SMTP_APP_PASS,
-} = process.env;
+// const {
+//     SMTP_HOST,
+//     SMTP_PORT,
+//     SMTP_MAIL,
+//     SMTP_APP_PASS,
+// } = process.env;
 
 
-if (!SMTP_HOST || !SMTP_PORT || !SMTP_MAIL || !SMTP_APP_PASS) {
-    throw new Error('Missing required environment variables');
-}
+// if (!SMTP_HOST || !SMTP_PORT || !SMTP_MAIL || !SMTP_APP_PASS) {
+//     throw new Error('Missing required environment variables');
+// }
 
 // Create the transporter
+
 const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: parseInt(SMTP_PORT, 10),
+    host:  process.env.SMTP_HOST,
+
+    // port: parseInt(SMTP_PORT, 10),
+    port:465,
     secure: true, // Use SSL
     auth: {
-        user: SMTP_MAIL,
-        pass: SMTP_APP_PASS,
+        user:  process.env.SMTP_MAIL,
+        pass:  process.env.SMTP_APP_PASS,
     },
     authMethod: 'LOGIN', // Specify the authentication method
 });
