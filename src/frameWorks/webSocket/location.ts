@@ -15,16 +15,18 @@ import { IPofileRepository } from "../../interfaces/user/profile/IProfileReposit
 import { INTERFACE_TYPE } from "../../utils/appConst";
 import { Container } from "inversify";
 
-import {container} from "../../routes/profileRoute"
-import { conversationContainer } from "../../routes/conversation";
+// import {container} from "../../routes/profileRoute"
+// import { conversationContainer } from "../../routes/conversation";
 import { IConversationRepository } from "../../interfaces/user/conversation/IConversationRepository";
 import { UserRepository } from "../../repositories/userRepository";
 import { Console } from "console";
+import { conversationRepository } from "../../repositories/user/conversationRepository";
 // const container=new Container()
-const profileRepo=container.get<IPofileRepository>(INTERFACE_TYPE.ProfileRepository)
-const conversationRepo=conversationContainer.get<IConversationRepository>(INTERFACE_TYPE.ConversationRepository)
+// const profileRepo=container.get<IPofileRepository>(INTERFACE_TYPE.ProfileRepository)
+// const conversationRepo=conversationContainer.get<IConversationRepository>(INTERFACE_TYPE.ConversationRepository)
+const conversationRepo=new conversationRepository()
 const repository = new locationRepository ();
-const profile=new ProfileRepository()
+const profileRepo=new ProfileRepository()
 
 
 const socketConfig=(io:Server)=>{   
@@ -55,7 +57,7 @@ const socketConfig=(io:Server)=>{
 
     socket.on('connectionNotification',async(senderId:Schema.Types.ObjectId,receiverId:Schema.Types.ObjectId,senderName:string,userProfileId:Schema.Types.ObjectId,receiverProfileId:Schema.Types.ObjectId)=>{
        
-       let response=await  profile.RconnectionNotification(senderName,senderId,receiverId,userProfileId,receiverProfileId)
+       let response=await  profileRepo.RconnectionNotification(senderName,senderId,receiverId,userProfileId,receiverProfileId)
    
        if(response){
        
@@ -200,7 +202,7 @@ const socketConfig=(io:Server)=>{
             // io.to(connectedClients[response.receiver]).emit('newMessage', response);
 
             const userDetails=await profileRepo.findUserDetails(response.receiver)
-            const findBlockorUnBock=await profile.RfindBlockUnblockDetails(response.chatroom,response.receiver)
+            const findBlockorUnBock=await profileRepo.RfindBlockUnblockDetails(response.chatroom,response.receiver)
                     const messageNotification={
                         message:response.message,
                         nickName:userDetails.nickName,

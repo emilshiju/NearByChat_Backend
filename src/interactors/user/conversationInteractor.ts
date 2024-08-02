@@ -14,16 +14,20 @@ import { response } from "express";
 
 
 
-@injectable()
 
 export class conversationInteractor implements IConversationInteractor{
 
     private repository:IConversationRepository
-    constructor(
-        @inject(INTERFACE_TYPE.ConversationRepository) repository:IConversationRepository
-    ){
-        this.repository=repository
-    }
+    // constructor(
+    //     @inject(INTERFACE_TYPE.ConversationRepository) repository:IConversationRepository
+    // ){
+    //     this.repository=repository
+    // }
+
+    constructor(repository: IConversationRepository) {
+      this.repository = repository;
+  }
+
     
     async IConversation(input: Conversation): Promise<any> {
 

@@ -12,21 +12,28 @@ import { checkRole } from "../services/rba";
 
 
 
-const container=new Container()
+// const container=new Container()
 
 
-container
-.bind<IProfileInteractor>(INTERFACE_TYPE.ProfileInteractor).to(ProfileInteractor)
+// container
+// .bind<IProfileInteractor>(INTERFACE_TYPE.ProfileInteractor).to(ProfileInteractor)
 
-container
-.bind<IPofileRepository>(INTERFACE_TYPE.ProfileRepository).to(ProfileRepository)
+// container
+// .bind<IPofileRepository>(INTERFACE_TYPE.ProfileRepository).to(ProfileRepository)
 
 
 
-container.bind(INTERFACE_TYPE.ProfileController).to(profileController)
+// container.bind(INTERFACE_TYPE.ProfileController).to(profileController)
 
 const route=express.Router()
-const controller=container.get<profileController>(INTERFACE_TYPE.ProfileController)
+// const controller=container.get<profileController>(INTERFACE_TYPE.ProfileController)
+
+
+
+const profileRepository: IPofileRepository = new ProfileRepository();
+const profileInteractor: IProfileInteractor = new ProfileInteractor(profileRepository);
+const controller: profileController = new profileController(profileInteractor);
+
 
 
 route.post('/submitProfile',verifyAccesToken,checkRole(['user']),controller.onSubmitProfile.bind(controller))
@@ -65,7 +72,7 @@ route.patch('/uploadUserProfileImage',controller.uploadUserProfileImage.bind(con
 
 route.post('/deleteProfileImage',controller.onDeleteProfileImageUrl.bind(controller))
 
-export { container }; // Exporting container as a named export
+// export { container }; // Exporting container as a named export
 
 // Exporting route as default export
 export default route;

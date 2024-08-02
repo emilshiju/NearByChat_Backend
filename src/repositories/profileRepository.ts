@@ -26,7 +26,7 @@ const config = {
 
 webpush.setVapidDetails(config.subject, config.publicKey, config.privateKey);
 
-@injectable()
+// @injectable()
 export class ProfileRepository implements IPofileRepository {
   async RcreateProfile(input: Profile): Promise<any> {
     const updateData = {

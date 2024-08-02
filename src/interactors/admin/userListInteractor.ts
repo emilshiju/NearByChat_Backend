@@ -7,16 +7,21 @@ import { response } from "express";
 import { report } from "../../entities/report";
 import { accessToken } from "../../services/jwtService";
 import { searchSubscription } from "../../entities/searchSubscription";
-@injectable()
+// @injectable()
 
 
 export class userListInteractor implements IUserListInteractor{
     private repository:IUserListRepository
-    constructor(
-        @inject(INTERFACE_TYPE.UserListRepository)repository:IUserListRepository
-    ){
-        this.repository=repository
+    // constructor(
+    //     @inject(INTERFACE_TYPE.UserListRepository)repository:IUserListRepository
+    // ){
+    //     this.repository=repository
+    // }
+
+    constructor(repository: IUserListRepository) {
+        this.repository = repository;
     }
+
 
     async Igetusers(): Promise<any> {
         

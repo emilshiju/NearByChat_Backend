@@ -15,15 +15,17 @@ import bcrypt from "bcrypt"
 
 dotenv.config();
 
-@injectable()
+
 export class profileController{
     private interactor:IProfileInteractor;
-    constructor(
-        @inject(INTERFACE_TYPE.ProfileInteractor) interactor:IProfileInteractor
-    ){
-        this.interactor=interactor
+    // constructor(
+    //     @inject(INTERFACE_TYPE.ProfileInteractor) interactor:IProfileInteractor
+    // ){
+    //     this.interactor=interactor
+    // }
+    constructor(interactor: IProfileInteractor) {
+        this.interactor = interactor;
     }
-
     async onSubmitProfile(req:Request,res:Response,next:NextFunction){
 
         try{

@@ -1,31 +1,37 @@
 import express from "express"
 import { Container } from "inversify";
 
-const conversationContainer=new Container()
+// const conversationContainer=new Container()
 
 import { INTERFACE_TYPE } from "../utils/appConst";
 import { IConversationInteractor } from "../interfaces/user/conversation/IConversationInteractor";
-import { conversationInteractor } from "../interactors/user/conversationInteractor";
+import {  conversationInteractor } from "../interactors/user/conversationInteractor";
 import { IConversationRepository } from "../interfaces/user/conversation/IConversationRepository";
 import { conversationRepository } from "../repositories/user/conversationRepository";
-import { conversationController } from "../controllers/user/conversationController";
+import {  conversationController } from "../controllers/user/conversationController";
 
 
-conversationContainer
-.bind<IConversationInteractor>(INTERFACE_TYPE.ConversationInteractor).to(conversationInteractor)
+// conversationContainer
+// .bind<IConversationInteractor>(INTERFACE_TYPE.ConversationInteractor).to(conversationInteractor)
 
-conversationContainer
-.bind<IConversationRepository>(INTERFACE_TYPE.ConversationRepository).to(conversationRepository)
-
-
-conversationContainer.bind(INTERFACE_TYPE.ConversationController).to(conversationController)
+// conversationContainer
+// .bind<IConversationRepository>(INTERFACE_TYPE.ConversationRepository).to(conversationRepository)
 
 
+// conversationContainer.bind(INTERFACE_TYPE.ConversationController).to(conversationController)
 
 
-const controller=conversationContainer.get<conversationController>(INTERFACE_TYPE.ConversationController)
+
+
+// const controller=conversationContainer.get<conversationController>(INTERFACE_TYPE.ConversationController)
 
 const route=express.Router()
+
+const Repository = new  conversationRepository()
+const Interactor = new conversationInteractor(Repository);
+const controller = new conversationController(Interactor);
+
+
 
 
 import multer from 'multer';
@@ -57,7 +63,7 @@ route.patch('/userTouserBlock',controller.OnuserTouserBlock.bind(controller))
 
 route.patch('/userTouserUnblock',controller.OnuserTouserUnblock.bind(controller))
 
-export {conversationContainer };
+// export {conversationContainer };
 export default route
 
 

@@ -12,22 +12,28 @@ import { verifyAccesToken } from "../services/jwtService";
 
 
 
-const container=new Container()
 
-container
-.bind<IUserListInteractor>(INTERFACE_TYPE.UserListInteractor)
-.to(userListInteractor)
+// const container=new Container()
 
-container
-.bind<IUserListRepository>(INTERFACE_TYPE.UserListRepository)
-.to(userListRepository)
+// container
+// .bind<IUserListInteractor>(INTERFACE_TYPE.UserListInteractor)
+// .to(userListInteractor)
+
+// container
+// .bind<IUserListRepository>(INTERFACE_TYPE.UserListRepository)
+// .to(userListRepository)
 
 
-container.bind(INTERFACE_TYPE.UserListController).to(UserListController)
+// container.bind(INTERFACE_TYPE.UserListController).to(UserListController)
 
 const router=express()
 
-const controller=container.get<UserListController>(INTERFACE_TYPE.UserListController)
+// const controller=container.get<UserListController>(INTERFACE_TYPE.UserListController)
+
+const Repository = new userListRepository();
+const Interactor = new userListInteractor(Repository);
+const controller = new UserListController(Interactor);
+
 
 
 router.post('/adminLogin',controller.adminLogin.bind(controller))

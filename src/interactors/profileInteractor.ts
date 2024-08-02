@@ -7,14 +7,18 @@ import { Schema } from "mongoose";
 
 
 
-@injectable()
+
 export class ProfileInteractor implements IProfileInteractor{
     private repository:IPofileRepository;
-    constructor(
-        @inject(INTERFACE_TYPE.ProfileRepository)repository:IPofileRepository
-    ){
-        this.repository=repository
+    // constructor(
+    //     @inject(INTERFACE_TYPE.ProfileRepository)repository:IPofileRepository
+    // ){
+    //     this.repository=repository
+    // }
+    constructor(repository: IPofileRepository) {
+        this.repository = repository;
     }
+
     
     async IcreateProfile(input: Profile): Promise<any> {
         
