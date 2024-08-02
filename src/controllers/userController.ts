@@ -31,11 +31,11 @@ let CLIENT_ID=process.env.CLIENT_ID
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 
- 
+
 export class UserController {
   private interactor: IUserInteractor;
 
-  
+
   constructor(interactor: IUserInteractor) {
     this.interactor = interactor;
   }
