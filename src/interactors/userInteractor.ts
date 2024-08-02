@@ -14,7 +14,7 @@ import { Schema } from "mongoose";
 import { response } from "express";
 
 
-@injectable()
+// @injectable()
 export class UserInteractor implements IUserInteractor{
     private repository:IUserRepository;
     // constructor (

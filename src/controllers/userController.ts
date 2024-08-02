@@ -32,7 +32,7 @@ let CLIENT_ID=process.env.CLIENT_ID
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 
-  @injectable()
+  // @injectable()
 export class UserController {
   private interactor: IUserInteractor;
 
@@ -41,9 +41,13 @@ export class UserController {
   // ) {
   //   this.interactor = interactor;
   // }
-  constructor(repository: IUserInteractor) {
-    this.interactor = repository;
-}
+
+
+  constructor(interactor: IUserInteractor) {
+    this.interactor = interactor;
+  }
+
+
 
   async onCreateUser(req: Request, res: Response, next: NextFunction) {
     try {
