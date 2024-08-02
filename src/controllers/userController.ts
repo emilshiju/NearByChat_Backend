@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 
 import { IUserInteractor } from "../interfaces/user/IUserInteractor";
 
-import { inject, injectable } from "inversify";
 
 import { INTERFACE_TYPE } from "../utils/appConst";
 
@@ -32,17 +31,11 @@ let CLIENT_ID=process.env.CLIENT_ID
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 
-  // @injectable()
+ 
 export class UserController {
   private interactor: IUserInteractor;
 
-  // constructor(
-  //   @inject(INTERFACE_TYPE.UserInteractor) interactor: IUserInteractor
-  // ) {
-  //   this.interactor = interactor;
-  // }
-
-
+  
   constructor(interactor: IUserInteractor) {
     this.interactor = interactor;
   }

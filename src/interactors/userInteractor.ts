@@ -1,7 +1,6 @@
 
 import "reflect-metadata";
 
-import { inject, injectable } from "inversify";
 import { IUserInteractor } from "../interfaces/user/IUserInteractor";
 import { IUserRepository } from "../interfaces/user/IUserRepository";
 import { INTERFACE_TYPE } from "../utils/appConst";
@@ -14,15 +13,10 @@ import { Schema } from "mongoose";
 import { response } from "express";
 
 
-// @injectable()
+
 export class UserInteractor implements IUserInteractor{
     private repository:IUserRepository;
-    // constructor (
-    //     @inject(INTERFACE_TYPE.UserRepository)repository:IUserRepository
-
-    // ){
-    //     this.repository=repository  
-    // }
+    
     constructor(repository: IUserRepository) {
         this.repository = repository;
     }
