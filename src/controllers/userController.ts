@@ -36,11 +36,14 @@ const client = new OAuth2Client(process.env.CLIENT_ID);
 export class UserController {
   private interactor: IUserInteractor;
 
-  constructor(
-    @inject(INTERFACE_TYPE.UserInteractor) interactor: IUserInteractor
-  ) {
-    this.interactor = interactor;
-  }
+  // constructor(
+  //   @inject(INTERFACE_TYPE.UserInteractor) interactor: IUserInteractor
+  // ) {
+  //   this.interactor = interactor;
+  // }
+  constructor(repository: IUserInteractor) {
+    this.interactor = repository;
+}
 
   async onCreateUser(req: Request, res: Response, next: NextFunction) {
     try {
