@@ -17,11 +17,14 @@ import { response } from "express";
 @injectable()
 export class UserInteractor implements IUserInteractor{
     private repository:IUserRepository;
-    constructor (
-        @inject(INTERFACE_TYPE.UserRepository)repository:IUserRepository
+    // constructor (
+    //     @inject(INTERFACE_TYPE.UserRepository)repository:IUserRepository
 
-    ){
-        this.repository=repository  
+    // ){
+    //     this.repository=repository  
+    // }
+    constructor(repository: IUserRepository) {
+        this.repository = repository;
     }
 
     async createUser(input:User) {
