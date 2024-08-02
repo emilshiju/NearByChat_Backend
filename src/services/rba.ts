@@ -7,10 +7,13 @@ import { INTERFACE_TYPE } from "../utils/appConst";
 
 import { IUserRepository } from "../interfaces/user/IUserRepository";
 
-import { container } from "../routes/userRoute";
+// import { container } from "../routes/userRoute";
 
 
-const userRepo=container.get<IUserRepository>(INTERFACE_TYPE.UserRepository)
+// const userRepo=container.get<IUserRepository>(INTERFACE_TYPE.UserRepository)
+
+const userRepo=new  UserRepository()
+
 
 interface CustomRequest extends Request {
     user?: any; // You can replace 'any' with a more specific type if you know the shape of 'user'
