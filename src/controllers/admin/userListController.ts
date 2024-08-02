@@ -8,14 +8,19 @@ import { IUserListInteractor } from "../../interfaces/admin/IUserlistInteractor"
 import { searchSubscription } from "../../entities/searchSubscription";
 dotenv.config();
 
-@injectable()
+// @injectable()
 export class UserListController {
   private interactor: IUserListInteractor;
-  constructor(
-    @inject(INTERFACE_TYPE.UserListInteractor) interactor: IUserListInteractor
-  ) {
+  // constructor(
+  //   @inject(INTERFACE_TYPE.UserListInteractor) interactor: IUserListInteractor
+  // ) {
+  //   this.interactor = interactor;
+  // }
+
+  constructor(interactor: IUserListInteractor) {
     this.interactor = interactor;
   }
+
 
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     console.log("yes");

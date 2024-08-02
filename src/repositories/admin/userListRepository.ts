@@ -13,7 +13,7 @@ import locationModel from "../../frameWorks/mongodb/models/userLocation";
 import { response } from "express";
 
 
-@injectable()
+// @injectable()
 
 
 

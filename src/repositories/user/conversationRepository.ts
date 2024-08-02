@@ -15,7 +15,7 @@ import { any, string } from "joi";
 
 
 
-@injectable()
+// @injectable()
 
 export class conversationRepository implements IConversationRepository{
 
