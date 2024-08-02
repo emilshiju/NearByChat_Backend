@@ -20,27 +20,29 @@ const storage = multer.diskStorage({})
 
 const upload = multer({storage:storage})
 
-const container=new Container()
+// const container=new Container()
 
 
 
-container
- .bind<IUserInteractor>(INTERFACE_TYPE.UserInteractor)
- .to(UserInteractor) 
+// container
+//  .bind<IUserInteractor>(INTERFACE_TYPE.UserInteractor)
+//  .to(UserInteractor) 
 
- container
- .bind<IUserRepository>(INTERFACE_TYPE.UserRepository)
- .to(UserRepository)
+//  container
+//  .bind<IUserRepository>(INTERFACE_TYPE.UserRepository)
+//  .to(UserRepository)
 
  
  
-container.bind(INTERFACE_TYPE.UserController).to(UserController)
+// container.bind(INTERFACE_TYPE.UserController).to(UserController)
 
  const router=express.Router()
 
- const controller=container.get<UserController>(INTERFACE_TYPE.UserController)
+//  const controller=container.get<UserController>(INTERFACE_TYPE.UserController)
 
- 
+const userRepository: IUserRepository = new UserRepository();
+const userInteractor: IUserInteractor = new UserInteractor(userRepository);
+const controller = new UserController(userInteractor);
 
     
  
@@ -97,7 +99,7 @@ router.get('/getOrderSummary/:id',controller.onGetOrderSummary.bind(controller))
 
 router.patch('/changePassword',controller.onChangePassword.bind(controller))
 
-export {container}
+// export {container}
 
  export default router
 

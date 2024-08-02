@@ -14,7 +14,7 @@ import bcrypt from "bcrypt";
 import paymentSummaryModel from "../frameWorks/mongodb/models/paymentSummary";
 import { response } from "express";
 
-@injectable()
+// @injectable()
 
 export class UserRepository implements IUserRepository {
   async create({ userName, dob, gender, email, password }: User): Promise<any> {
