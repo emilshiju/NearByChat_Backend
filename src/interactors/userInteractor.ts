@@ -1,3 +1,6 @@
+
+import "reflect-metadata";
+
 import { inject, injectable } from "inversify";
 import { IUserInteractor } from "../interfaces/user/IUserInteractor";
 import { IUserRepository } from "../interfaces/user/IUserRepository";
