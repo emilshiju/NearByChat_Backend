@@ -31,11 +31,15 @@ dotenv.config();
 
 export class conversationController{
     private interactor:IConversationInteractor;
-    constructor(
-        @inject(INTERFACE_TYPE.ConversationInteractor)  interactor:IConversationInteractor
-    ){
-        this.interactor=interactor
-    }
+    // constructor(
+    //     @inject(INTERFACE_TYPE.ConversationInteractor)  interactor:IConversationInteractor
+    // ){
+    //     this.interactor=interactor
+    // }
+
+    constructor(interactor: IConversationInteractor) {
+        this.interactor = interactor;
+      }
 
 
     async  chatRoom(req:Request,res:Response,next:NextFunction){
