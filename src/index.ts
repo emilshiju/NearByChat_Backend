@@ -40,7 +40,7 @@ socketConfig(io)
 //     origin: 'http://localhost:5174' // Allow this origin
 //   }));
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174','https://near-by-chat-frontend.vercel.app'];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174','https://near-by-chat-frontend.vercel.app','https://anonymous10.cloud'];
 
 // const corsOptions: cors.CorsOptions = {
 //   origin: (origin, callback) => {
