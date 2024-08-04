@@ -26,7 +26,7 @@ import { Conversation } from "../../entities/conversation";
 dotenv.config();
 
 
-@injectable()
+// @injectable()
 
 
 export class conversationController{
