@@ -229,6 +229,8 @@ export class profileController{
         const userId=req.body.id
 
         const response=await this.interactor.IincrementSearchCount(userId)
+
+        return res.json({status:true})
     }
 
 

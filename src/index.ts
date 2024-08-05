@@ -20,8 +20,8 @@ import cookieParser from 'cookie-parser'
 connectToMongo()
 import path from "path";
 
-// dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config();
+// dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 
 const app=express()

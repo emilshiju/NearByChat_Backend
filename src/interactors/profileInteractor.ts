@@ -96,6 +96,8 @@ export class ProfileInteractor implements IProfileInteractor{
         
 
         const response=await this.repository.RincrementSearchCount(userId)
+
+        return response
     }
 
     async IdispalyProfileDetails(userId: string): Promise<any> {
