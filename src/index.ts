@@ -18,7 +18,10 @@ import socketConfig from './frameWorks/webSocket/location';
 import { urlencoded } from 'body-parser';
 import cookieParser from 'cookie-parser'
 connectToMongo()
-dotenv.config();
+import path from "path";
+
+// dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 
 const app=express()
