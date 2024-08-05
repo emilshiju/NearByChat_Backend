@@ -106,7 +106,7 @@ export const verifyAccesToken=(req:CustomRequest,res:Response,next:NextFunction)
     }
 
   
-    const secretOrPrivateKey: AccessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "";
+    const secretOrPrivateKey: AccessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "ejiofheoihfoiehofheiofhejrhfoh";
    
     jwt.verify(token, secretOrPrivateKey,(err:any,decoded:any)=>{
 
