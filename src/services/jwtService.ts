@@ -3,6 +3,9 @@ import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongoose";
 
 
+import dotenv from "dotenv"
+
+dotenv.config();
 
 export const accessToken = (userName: string, email: string,id:ObjectId) => {
   const secretOrPrivateKey: Secret = process.env.ACCESS_TOKEN_SECRET || "";
