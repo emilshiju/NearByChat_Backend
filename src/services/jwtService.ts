@@ -63,7 +63,7 @@ export const verifyRefreshToken = (
 export const refreshToken = (username: string,id:ObjectId) => {
 
             console.log("refereshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
-  const secretOrPrivateKey: Secret = process.env.REFRESH_TOKEN_SECRET || "";
+  const secretOrPrivateKey: Secret = process.env.REFRESH_TOKEN_SECRET || "SUFHSIUFHISDHFSHFKWEHFUEWH";
   const token = jwt.sign(
     {
       username: username,
