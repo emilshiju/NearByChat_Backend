@@ -69,10 +69,15 @@ socketConfig(io)
 // app.use(cors(corsOptions));
 
 
-app.use(cors({
-  origin: '*', // This allows all origins
-}));
+// CORS configuration for all origins and requests
+const corsOptions = {
+  origin: '*',  // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Allow credentials (beware of security implications)
+};
 
+app.use(cors(corsOptions));
   
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
