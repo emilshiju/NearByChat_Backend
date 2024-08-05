@@ -8,7 +8,7 @@ import dotenv from "dotenv"
 dotenv.config();
 
 export const accessToken = (userName: string, email: string,id:ObjectId) => {
-  const secretOrPrivateKey: Secret = process.env.ACCESS_TOKEN_SECRET || "";
+  const secretOrPrivateKey: Secret = process.env.ACCESS_TOKEN_SECRET || "ejiofheoihfoiehofheiofhejrhfoh";
 
   const token = jwt.sign(
     {
@@ -32,7 +32,7 @@ export const verifyRefreshToken = (
  
 ): Promise<string | null> => {
 
-  const secret: Secret = process.env.REFRESH_TOKEN_SECRET || "";
+  const secret: Secret = process.env.REFRESH_TOKEN_SECRET || "SUFHSIUFHISDHFSHFKWEHFUEWH";
 
   return new Promise((resolve, reject) => {
     jwt.verify(input, secret, async (err, decoded) => {
