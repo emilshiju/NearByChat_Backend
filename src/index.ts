@@ -40,10 +40,21 @@ socketConfig(io)
 //     origin: 'http://localhost:5174' // Allow this origin
 //   }));
 
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174','https://near-by-chat-frontend.vercel.app','https://anonymous10.cloud'];
+// const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174','https://near-by-chat-frontend.vercel.app','https://anonymous10.cloud'];
+
+// // const corsOptions: cors.CorsOptions = {
+// //   origin: (origin, callback) => {
+// //     if (allowedOrigins.indexOf(origin!) !== -1 || !origin) {
+// //       callback(null, true); // Allow the request
+// //     } else {
+// //       callback(new Error('Not allowed by CORS')); // Block the request
+// //     }
+// //   },
+// //   credentials: true, 
+// // };
 
 // const corsOptions: cors.CorsOptions = {
-//   origin: (origin, callback) => {
+//   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
 //     if (allowedOrigins.indexOf(origin!) !== -1 || !origin) {
 //       callback(null, true); // Allow the request
 //     } else {
@@ -53,21 +64,15 @@ const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174','https:
 //   credentials: true, 
 // };
 
-const corsOptions: cors.CorsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (allowedOrigins.indexOf(origin!) !== -1 || !origin) {
-      callback(null, true); // Allow the request
-    } else {
-      callback(new Error('Not allowed by CORS')); // Block the request
-    }
-  },
-  credentials: true, 
-};
 
 
+// app.use(cors(corsOptions));
 
-app.use(cors(corsOptions));
-  
+
+app.use(cors({
+  origin: '*', // This allows all origins
+}));
+
   
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
