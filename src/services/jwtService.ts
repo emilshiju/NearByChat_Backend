@@ -39,7 +39,7 @@ export const verifyRefreshToken = (
       if (err) {
         reject(err); // Return error if verification fails
       } else {
-        const secretOrPrivateKey: Secret = process.env.ACCESS_TOKEN_SECRET || "";
+        const secretOrPrivateKey: Secret = process.env.ACCESS_TOKEN_SECRET || "ejiofheoihfoiehofheiofhejrhfoh";
 
         const token = await jwt.sign(
           {
