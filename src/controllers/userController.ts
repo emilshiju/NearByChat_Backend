@@ -396,7 +396,8 @@ return res.json({status:false})
 
     const response=await this.interactor.IsaveLocation(longitude,latitude,userId)
 
-
+    
+    return res.json({status:true})
 
 
   }

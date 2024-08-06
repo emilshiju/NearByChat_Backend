@@ -159,6 +159,8 @@ const SALT_ROUNDS = 10;
      async IsaveLocation(longitude: any, latitude: any,userId:any): Promise<any> {
 
         let response=await this.repository.RsaveLocation(longitude,latitude,userId)
+
+        return response
         
     }
     
