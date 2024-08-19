@@ -1,5 +1,5 @@
-import { required } from "joi";
-import mongoose,{Schema,model, Types} from "mongoose";
+
+import {Schema,model, Types} from "mongoose";
 
 
 const locationSchema=new Schema(

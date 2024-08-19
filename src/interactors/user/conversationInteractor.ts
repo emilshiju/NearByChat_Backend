@@ -1,16 +1,16 @@
 
 
-import { inject, injectable } from "inversify";
-import { INTERFACE_TYPE } from "../../utils/appConst";
-import { Schema } from "mongoose";
+
 
 
 
 
 import { IConversationInteractor } from "../../interfaces/user/conversation/IConversationInteractor";
 import { IConversationRepository } from "../../interfaces/user/conversation/IConversationRepository";
-import { Conversation } from "../../entities/conversation";
-import { response } from "express";
+import { CombinedType, Conversation, IChatroom } from "../../entities/conversation";
+import { userList } from "../../entities/user";
+import { UpdateResult } from "mongodb";
+
 
 
 
@@ -18,81 +18,101 @@ import { response } from "express";
 export class conversationInteractor implements IConversationInteractor{
 
     private repository:IConversationRepository
-    // constructor(
-    //     @inject(INTERFACE_TYPE.ConversationRepository) repository:IConversationRepository
-    // ){
-    //     this.repository=repository
-    // }
-
+   
     constructor(repository: IConversationRepository) {
       this.repository = repository;
   }
 
     
-    async IConversation(input: Conversation): Promise<any> {
+    async IConversation(input: Conversation): Promise<CombinedType|null|userList> {
 
-        let response=await this.repository.RConversation(input)
-        console.log("here             rsponseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+
+
+      try{
+        const response=await this.repository.RConversation(input)
         
         return response
+
+      }catch(error){
+        throw error
+      }
     }
 
-    async ICreateChatRoom(input: Conversation): Promise<any> {
 
-        let response=await this.repository.RCreateChatRoom(input)
+    async ICreateChatRoom(input: Conversation): Promise<IChatroom|null> {
+
+
+        try{
+        const response=await this.repository.RCreateChatRoom(input)
 
         return response
+        }catch(error){
+          throw error
+        }
         
     }
+
   async IGetAllConversation(userId: string): Promise<any> {
-
-    let response=await this.repository.RGetAllConversation(userId)
+     
+    try{
+    const response=await this.repository.RGetAllConversation(userId)
       
     return response
+    }catch(error){
+      throw error
+    }
   }   
 
-   async IDeleteChat(selectedUserId: string,userId:string): Promise<any> {
 
-    
 
-    let response=await this.repository.RDelteChat(selectedUserId,userId)
+   async IDeleteChat(selectedUserId: string,userId:string): Promise<null> {
+
+       try{
+
+    const response=await this.repository.RDelteChat(selectedUserId,userId)
 
     return response
+       }catch(error){
+        throw error
+       }
       
   }
   
-   async IDeleteAllMessages(messagesId: string[]): Promise<any> {
-
-    // const response=await this.repository.RDeleteAllMessages(messagesId)
+  
 
 
-    // return response
-    
-  }
-
-
-  async IDeleteSingleChat(chatRoomId: any, userId: any): Promise<any> {
+  async IDeleteSingleChat(chatRoomId: string, userId: string): Promise<UpdateResult> {
        
+    try{
     const  response=await this.repository.RDeleteSingleChat(chatRoomId,userId)
 
     return response
+    }catch(error){
+      throw error
+    }
   }
 
-  async IuserTouserBlock(chatRoomId: any, userId: any): Promise<any> {
-      console.log("ivdie ivdie ivide ")
-
+  async IuserTouserBlock(chatRoomId: string, userId: string): Promise<UpdateResult> {
+    
+   try{
     const respone=await this.repository.RuserTouserBlock(chatRoomId,userId)
 
     return respone
+   }catch(error){
+    throw error
+   }
   }
 
 
-  async IuserTouserUnblock(chatRoomId: any, userId: any): Promise<any> {
+  async IuserTouserUnblock(chatRoomId:string, userId: string): Promise<UpdateResult> {
     
-
+     try{
     const respone=await this.repository.RuserTouserUnblock(chatRoomId,userId)
 
     return respone
+     }catch(error){
+      throw error
+     }
 
 
   }

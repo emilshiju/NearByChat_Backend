@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 
 
 export class searchSubscription{
@@ -10,3 +11,28 @@ export class searchSubscription{
         public readonly imageUrl:string
     ){}
 }
+
+export interface SubscriptionType {
+    _id: ObjectId;  // Mongoose's ObjectId type
+    userId: ObjectId;  // Mongoose's ObjectId type
+    userName: string;
+    nickName: string;
+    imageUrl: string;
+    gender: string;
+    subscriptionName: string;
+    maxCount: number;
+    price: number;
+    email: string;
+    dob: Date;  // Use Date for ISO string representation
+    timePeriod: string;
+    searchSubUrl: string;
+    description: string;
+    paymentStatus: string;
+    razorpayPaymentId: string;
+    razorpayOrderId: string;
+    createdAt: Date;  // Use Date for ISO string representation
+    updatedAt: Date;  // Use Date for ISO string representation
+    __v: number;
+  }
+
+  

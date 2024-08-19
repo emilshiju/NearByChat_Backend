@@ -1,29 +1,11 @@
 import express from "express"
-import { Container } from "inversify";
 
-// const conversationContainer=new Container()
 
-import { INTERFACE_TYPE } from "../utils/appConst";
-import { IConversationInteractor } from "../interfaces/user/conversation/IConversationInteractor";
 import {  conversationInteractor } from "../interactors/user/conversationInteractor";
-import { IConversationRepository } from "../interfaces/user/conversation/IConversationRepository";
+
 import { conversationRepository } from "../repositories/user/conversationRepository";
 import {  conversationController } from "../controllers/user/conversationController";
 
-
-// conversationContainer
-// .bind<IConversationInteractor>(INTERFACE_TYPE.ConversationInteractor).to(conversationInteractor)
-
-// conversationContainer
-// .bind<IConversationRepository>(INTERFACE_TYPE.ConversationRepository).to(conversationRepository)
-
-
-// conversationContainer.bind(INTERFACE_TYPE.ConversationController).to(conversationController)
-
-
-
-
-// const controller=conversationContainer.get<conversationController>(INTERFACE_TYPE.ConversationController)
 
 const route=express.Router()
 
@@ -55,7 +37,7 @@ route.post('/uploadChatPic',verifyAccesToken,checkRole(['user']),upload.single('
 
 route.post('/clearChat',controller.onClearChat.bind(controller))
 
-// route.delete('/deleteMessages',controller.onDeleteAllMessages.bind(controller))
+
 
 route.delete('/deleteSingleChat',controller.onDeleteSingleChat.bind(controller))
 
@@ -63,7 +45,7 @@ route.patch('/userTouserBlock',controller.OnuserTouserBlock.bind(controller))
 
 route.patch('/userTouserUnblock',controller.OnuserTouserUnblock.bind(controller))
 
-// export {conversationContainer };
+
 export default route
 
 

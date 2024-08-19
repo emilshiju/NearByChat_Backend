@@ -4,6 +4,7 @@ import { ObjectId } from "mongoose";
 
 
 import dotenv from "dotenv"
+import { decoded } from "../entities/user";
 
 dotenv.config();
 
@@ -30,12 +31,12 @@ export const verifyRefreshToken = (
   username: string,
   userId:string
  
-): Promise<string | null> => {
+): Promise<string > => {
 
   const secret: Secret = process.env.REFRESH_TOKEN_SECRET || "SUFHSIUFHISDHFSHFKWEHFUEWH";
 
   return new Promise((resolve, reject) => {
-    jwt.verify(input, secret, async (err, decoded) => {
+    jwt.verify(input, secret, async (err) => {
       if (err) {
         reject(err); // Return error if verification fails
       } else {
@@ -50,7 +51,7 @@ export const verifyRefreshToken = (
           { expiresIn: "10d" }
         );
 
-        resolve(token); // Return the signed token
+        resolve(token); 
       }
     });
   });
@@ -62,7 +63,7 @@ export const verifyRefreshToken = (
 
 export const refreshToken = (username: string,id:ObjectId) => {
 
-            console.log("refereshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+        
   const secretOrPrivateKey: Secret = process.env.REFRESH_TOKEN_SECRET || "SUFHSIUFHISDHFSHFKWEHFUEWH";
   const token = jwt.sign(
     {
@@ -84,11 +85,11 @@ export const refreshToken = (username: string,id:ObjectId) => {
 
 
 
-// Define a type for your access token secret
+
 type AccessTokenSecret = string | undefined;
 
 interface CustomRequest extends Request {
-  user?: any; // You can replace 'any' with a more specific type if you know the shape of 'user'
+  user?: decoded
 }
 
 
@@ -96,7 +97,7 @@ export const verifyAccesToken=(req:CustomRequest,res:Response,next:NextFunction)
   
   try{
     const authHeader = req.headers['authorization'];
-    let token=authHeader && authHeader.split(' ')[1]
+    const token=authHeader && authHeader.split(' ')[1]
    
  
     if (!token) {
@@ -116,8 +117,7 @@ export const verifyAccesToken=(req:CustomRequest,res:Response,next:NextFunction)
         console.log(err)
         return res.status(401).json({message:'Unauthorized'})
       }
-      console.log("ivide ane decoed decoed  11111111111111111111111111111111111111111111111111111111111111111111                              decoed 99999999999999999999999999999999999999")
-      console.log(decoded)
+  
     
       req.user=decoded 
 
@@ -129,6 +129,10 @@ export const verifyAccesToken=(req:CustomRequest,res:Response,next:NextFunction)
 
 
   }catch(error){
+  
+
+    next(error)
+
 
   }
 }

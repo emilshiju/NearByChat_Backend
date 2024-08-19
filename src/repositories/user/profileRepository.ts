@@ -1,19 +1,25 @@
 
-import { Profile } from "../entities/profile";
-import ProfileModel from "../frameWorks/mongodb/models/profileModel";
-import { IPofileRepository } from "../interfaces/user/profile/IProfileRepository";
-import { injectable } from "inversify";
-import notificationModel from "../frameWorks/mongodb/models/notificationModel";
-import mongoose,{Schema,model, Types} from "mongoose";
-import UserModel from "../frameWorks/mongodb/models/userModel";
-import SubscriptionModel from "../frameWorks/mongodb/models/subscriptionModel";
-// import { messaging } from "../frameWorks/firebase/firebase";
-import { any } from "joi";
-import chatRoomModel from "../frameWorks/mongodb/models/chatRoomMode";
+import { Profile, profileData, userProfileConnection } from "../../entities/profile";
+
+import { IPofileRepository } from "../../interfaces/user/profile/IProfileRepository";
+
+import notificationModel from "../../frameWorks/mongodb/models/notificationModel";
+import {ObjectId, Schema, Types} from "mongoose";
+import UserModel from "../../frameWorks/mongodb/models/userModel";
+import SubscriptionModel from "../../frameWorks/mongodb/models/subscriptionModel";
+
+
+import chatRoomModel from "../../frameWorks/mongodb/models/chatRoomMode";
 import webpush from "web-push";
 import cron from 'node-cron';
-import searchSubscriptionModel from "../frameWorks/mongodb/models/searchSubscription";
-import paymentSummaryModel from "../frameWorks/mongodb/models/paymentSummary";
+import searchSubscriptionModel from "../../frameWorks/mongodb/models/searchSubscription";
+import paymentSummaryModel from "../../frameWorks/mongodb/models/paymentSummary";
+import {  fcmSubscription, userDetails, userList } from "../../entities/user";
+import { acceptRequest, notificationDisplayDetails, NotificationType, senderNotification, statusUpdate } from "../../entities/notification";
+
+import { paymentSummary } from "../../entities/paymentSummary";
+import { IChatroom} from "../../entities/conversation";
+
 
 const config = {
   subject: "mailto:emilshiju10@gmail.com",
@@ -26,9 +32,13 @@ const config = {
 
 webpush.setVapidDetails(config.subject, config.publicKey, config.privateKey);
 
-// @injectable()
+
 export class ProfileRepository implements IPofileRepository {
-  async RcreateProfile(input: Profile): Promise<any> {
+
+
+  async RcreateProfile(input: Profile): Promise<userList> {
+
+    try{
     const updateData = {
       bio: input.bio,
       profession: input.profession,
@@ -41,14 +51,21 @@ export class ProfileRepository implements IPofileRepository {
       updateData,
       {new: true }
     );
-    console.log(profile);
-    return profile;
+   
+    return profile?.toObject() as userList
+
+  }catch(error){
+    throw error
+  }
   }
 
-  async RgetProfileUrl(input: any): Promise<any> {
-    console.log("thirdd");
-    console.log(input)
-    let user = await UserModel.findById(input);
+
+
+  async RgetProfileUrl(input: string): Promise<profileData|boolean> {
+    
+
+    try{
+    const user = await UserModel.findById(input);
         console.log(user)
    if(user?.nickName){
     const data={
@@ -60,26 +77,41 @@ export class ProfileRepository implements IPofileRepository {
       maxSearch:user?.maxSearch,
       profileUrl:user?.images
     }
+    
    
     return data
   }
   return false
+
+}catch(error){
+  throw error
+}
   }
+
+
 
   async RupdateImageUrl(
     userId: Schema.Types.ObjectId,
     imageUrl: string
-  ): Promise<any> {
-    let found = await UserModel.findByIdAndUpdate(
+  ): Promise<{ imageUrl: string | null }> {
+
+    try{
+    const found = await UserModel.findByIdAndUpdate(
      userId ,
       { imageUrl: imageUrl }
     );
     console.log(found);
     const url={
-      imageUrl:found?.imageUrl
+      imageUrl:found?.imageUrl||''
     }
     return url
+  }catch(error){
+    throw error
   }
+  }
+
+
+
 
   async RconnectionNotification(
     senderName: string,
@@ -89,8 +121,8 @@ export class ProfileRepository implements IPofileRepository {
     receiverProfileId: Schema.Types.ObjectId
   ): Promise<any> {
     try {
-      console.log(receiverId);
-      console.log(userProfileId);
+
+    
 
       const notification = await new notificationModel({
         senderId,
@@ -103,33 +135,32 @@ export class ProfileRepository implements IPofileRepository {
 
       const savedNotification = await notification.save();
       const save = await savedNotification.populate("senderProfile");
-      console.log(savedNotification);
-
-      console.log(
-        "keteyiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-      );
+      
 
       return save;
     } catch (error) {
-      console.log(error);
+      throw error
     }
-    // const response=await
+    
   }
 
+
+
   async RgetNotification(userId: string): Promise<any> {
+
+
+    try{
     const connectRequests = await notificationModel.find({
       $or: [{ senderId: userId }, { receiverId: userId }],
     }); 
     if (!connectRequests || connectRequests.length === 0) {
        return false
     }
-    // const objectId = new Types.ObjectId(userId);
-
+    
     await Promise.all(connectRequests.map(async (connectRequest) => {
-      console.log(connectRequest.senderId)
+      
       if (connectRequest.senderId.toString()==userId ) {
-        console.log("its eqaul")  
-        console.log(connectRequest.senderId.toString())
+       
           await connectRequest.populate('receiverId')
       }
       if (connectRequest.receiverId.toString()=== userId) {
@@ -142,54 +173,60 @@ export class ProfileRepository implements IPofileRepository {
   }));
   return connectRequests
 
-    // console.log(connectRequests)
+}catch(error){
+  throw error
+}
+
   }
 
-   async acceptedRequest(senderId:Schema.Types.ObjectId,receiverId:Schema.Types.ObjectId): Promise<any> {
+
+
+
+
+   async acceptedRequest(senderId:Schema.Types.ObjectId,receiverId:Schema.Types.ObjectId): Promise<acceptRequest|null> {
     
      try{
-      console.log("hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-
-      console.log(senderId)
-      console.log(receiverId)
-
+      
          
-             const userProfile = await UserModel.findById(senderId);
+             const userProfile:userDetails|null = await UserModel.findById(senderId);
 
                      if (!userProfile) {
                                      // No profile found for the user
-                           return false;
+                           return null;
                         }
                         
                     
-                     const connection = userProfile.connections.find(conn =>
-                      //@ts-ignore
-                 conn.userId&& (conn.userId as mongoose.Types.ObjectId).equals(receiverId )
+                     const connection:userProfileConnection = userProfile.connections.find(conn =>
+                    
+                 conn.userId&& (conn.userId).equals(receiverId )
                  );
                  
                  if(connection){
                   connection.status='true'
                  }
 
+                 
+
                  await userProfile.save();
                  console.log(connection)
 
 
 
-                 const userProfile2 = await UserModel.findById(receiverId);
+                 const userProfile2:userDetails|null = await UserModel.findById(receiverId);
 
                     
                  
                  if (!userProfile2) {
                   // No profile found for the user
-                         return false;
+                         return null;
                  }
      
-                     //@ts-ignore
-                     const connection2 = userProfile2.connections.find(conn =>
-                      //@ts-ignore
-                 conn.userId&& (conn.userId as mongoose.Types.ObjectId).equals(senderId)
+                    
+                     const connection2:userProfileConnection = userProfile2.connections.find(conn =>
+                    
+                 conn.userId&& (conn.userId).equals(senderId)
                  );
+
 
 
                  if(connection2){
@@ -213,7 +250,7 @@ export class ProfileRepository implements IPofileRepository {
 
         if (!notification) {
           console.log('Notification not found');
-          return;
+          return null
         }
 
         notification.status='true'
@@ -221,29 +258,28 @@ export class ProfileRepository implements IPofileRepository {
         notification.message='both are connected'
 
         const updatedNotification = await notification.save()
-        console.log("updaed notificaiotn")
-        console.log(updatedNotification)
-
-
-
-console.log("kkkkkkkk")
-
+       
+       if(updatedNotification==undefined) {
+        return null
+       }
 
       
-      return updatedNotification
+      return updatedNotification.toObject() 
 
      }catch(error){
-      console.log("error")
+      throw error
+      
 
      }
 
 
   }
 
-  async connectionRequest(userName:string,senderId:string,receiverId:string): Promise<any> {
 
-  console.log("oneeeeeeeeeeeeeeeee")
-  console.log(userName,senderId,receiverId)
+
+  async connectionRequest(userName:string,senderId:string,receiverId:string): Promise<senderNotification> {
+
+ 
   const senderObjectId = new Types.ObjectId(senderId);
   const receiverObjectId = new Types.ObjectId(receiverId);
 
@@ -260,7 +296,7 @@ console.log("kkkkkkkk")
    )
   
   if(!userFirst){
-    const response = await UserModel.findByIdAndUpdate(
+     await UserModel.findByIdAndUpdate(
       senderId,
       {
           $push: {
@@ -275,7 +311,7 @@ console.log("kkkkkkkk")
       
   if(!userSecond){
 
-      const response2 = await UserModel.findByIdAndUpdate(
+      await UserModel.findByIdAndUpdate(
         receiverId,
         {
           $push: {
@@ -296,28 +332,27 @@ console.log("kkkkkkkk")
 
       
    console.log("finding finding finding finding ")
-      const findNotification=await notificationModel.findOne({ $or: [
+      const findNotification:NotificationType|null=await notificationModel.findOne({ $or: [
         { senderId: senderId, receiverId: receiverId },
         { senderId: receiverId, receiverId: senderId }
       ]})
+      
 
   
 
-       console.log("user is hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee    11111111111111111111111111111111111111111111111111111111111111111111111111111111")
-       console.log(findNotification)
-       console.log(senderObjectId)
-       console.log(receiverObjectId)
+    
 
       if(findNotification){
-        //@ts-ignore
+       
            findNotification.senderId=senderObjectId,
-           //@ts-ignore
+         
            findNotification.receiverId=receiverObjectId
            findNotification.type='connect'
            findNotification.message=`${userName} wants to connect with you.`
        
            const saved= await findNotification.save();
-           const save = await saved.populate("senderId")
+           const save:senderNotification = await saved.populate("senderId")
+          
            return save
            
         
@@ -333,7 +368,9 @@ console.log("kkkkkkkk")
       });
 
       const savedNotification = await notification.save();
-      const save = await savedNotification.populate("senderId");
+      const save:senderNotification = await savedNotification.populate("senderId");
+      console.log("saved")
+      console.log(save)
       console.log(savedNotification);
 
       return save;
@@ -345,29 +382,30 @@ console.log("kkkkkkkk")
    
  }
 
-  async RcheckConnectionStatus(userId:any,receiverId:any): Promise<any> {
 
-    console.log("ivdieeeee 999999999999999999999999999999999999999999")
-    console.log(userId)
-    console.log(receiverId)
 
-    const userProfile = await UserModel.findById(userId);
+
+ 
+
+  async RcheckConnectionStatus(userId:ObjectId,receiverId:ObjectId): Promise<statusUpdate|string|null> {
+   
+    try{
+
+     
+    const userProfile:userList|null = await UserModel.findById(userId);
 
     if (!userProfile) {
       // No profile found for the user
-      return false;
+      return null;
   }
 
-  const connection = userProfile.connections.find(conn =>
-    conn.userId&& (conn.userId as mongoose.Types.ObjectId).equals(receiverId)
+  const connection:statusUpdate = userProfile.connections.find(conn =>
+    conn.userId&& (conn.userId ).equals(receiverId)
 );
 
 
-  if(!connection){
+  
 
-  }
-
-  console.log("all connection of user all ocnnectio n of user 00000000000000000000000000000000")
 
 
 
@@ -378,38 +416,57 @@ console.log("kkkkkkkk")
   
 
     return 'false'
+
+}catch(error){
+  throw error
+}
+
+
+
    
  }
 
-  async RgetProfileDetails(userId: Schema.Types.ObjectId): Promise<any> {
-    console.log(userId)
-    let response=await UserModel.findById(userId)
 
-    return response
+
+
+  async RgetProfileDetails(userId: Schema.Types.ObjectId): Promise<userList|null> {
+    
+    try{
+    const response=await UserModel.findById(userId)
+    
+    if(response){
+    return response.toObject()
+    }else{
+      return null
+    }
+  }catch(error){
+    throw error
+  }
  }
 
 
-  async RUnConnectUser(delteSenderId:string,deleteReceiverId:string): Promise<any> {
+  async RUnConnectUser(delteSenderId:string,deleteReceiverId:string): Promise<NotificationType|null> {
    
-    // const response = await UserModel.updateOne(
-    //   { _id: delteSenderId },
-    //   { $pull: { connections: { userId: deleteReceiverId } } }
-    // );
-    const response = await UserModel.findOneAndUpdate(
+
+    try{
+  
+     await UserModel.findOneAndUpdate(
       { _id: delteSenderId, "connections.userId": deleteReceiverId },
       { $set: { "connections.$.status": 'false' } }
     );
-    const response2 = await UserModel.findOneAndUpdate(
+     await UserModel.findOneAndUpdate(
       { _id: deleteReceiverId, "connections.userId": delteSenderId },
       { $set: { "connections.$.status": 'false' } }
     );
 
-    const findNotification:any=await notificationModel.findOne({ $or: [
+    const findNotification:NotificationType|null=await notificationModel.findOne({ $or: [
       { senderId: delteSenderId, receiverId: deleteReceiverId},
       { senderId: deleteReceiverId, receiverId: delteSenderId }
     ]})
-    // @ts-ignore
-    // findNotification?.message='both are unConnected'
+ 
+    if(!findNotification){
+      return null
+    }
     if (findNotification) {
       findNotification.message = 'both are unConnected';
     }
@@ -419,14 +476,34 @@ console.log("kkkkkkkk")
    
         return findNotification
 
+  }catch(error){
+    throw error
+  }
+
+
+
+
+
  }  
 
 
- async findUserDetails(id: Schema.Types.ObjectId): Promise<any> {
 
+ async findUserDetails(id: Schema.Types.ObjectId): Promise<notificationDisplayDetails|null> {
+
+
+
+  try{
      const response = await UserModel.findOne({ _id: id }, 'imageUrl nickName');
 
-     return response
+     if(!response){
+      return null
+     }
+
+     return response?.toObject()
+
+    }catch(error){
+      throw error
+    }
  }
 
 
@@ -435,45 +512,13 @@ console.log("kkkkkkkk")
  // firebase integration for push Notification
 
 
-  async RStorePushNotification(value: string):Promise<any> {
-      console.log("ivdie eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  bbbb")
-    console.log(value)
-    // const topic = 'all'
-
-    // try{
-   
-    // await messaging.subscribeToTopic(value, topic);
-    // console.log("sucesfulfyllllllllllllllllllll           regisssssssssssssssteredddddddddddddddd")
-    // }catch(error){
-    //   console.log("error")
-    // }
-  //   messaging.subscribeToTopic(value, topic)
-  // .then((response) => {
-  //   // See the MessagingTopicManagementResponse reference documentation
-  //   // for the contents of response.
-  //   console.log('Successfully subscribed to topic:', response);
-  // })
-  // .catch((error) => {
-  //   console.log('Error subscribing to topic:', error);
-
-
-  // const message = {
- 
-  //     title: 'New Message',
-  //     body: 'This is a test multicast notification',
-  //     token: value,
+  async RStorePushNotification(value: fcmSubscription):Promise<boolean> {
+     
     
-   
-  // };
-  // });
-
-
-
-  // store in firebase
 
   let cornJon:any=null
 
-    const response=await SubscriptionModel.create(value)
+    await SubscriptionModel.create(value)
       
     interface modelSubscriptions{
       endpoint: string;
@@ -482,6 +527,7 @@ console.log("kkkkkkkk")
         p256dh: string;
         auth: string;
       };
+
 
     }
 
@@ -494,9 +540,9 @@ console.log("kkkkkkkk")
 
       try{
 
-    const subscriptions:modelSubscriptions[] = await SubscriptionModel.find({ });
+    const subscriptions:fcmSubscription[] = await SubscriptionModel.find({ });
 
-    const tokens: string[] = subscriptions.map((subscription: modelSubscriptions) => {
+     subscriptions.map((subscription: fcmSubscription) => {
       const endpointParts = subscription.endpoint.split('/');
       return endpointParts[endpointParts.length - 1];
     });
@@ -526,10 +572,12 @@ console.log("kkkkkkkk")
   await Promise.all(notificationPromises);
 
 
+ 
+
+
 
 }catch(error){
-
-  console.log("error in psh notificaon sending ")
+  throw error
 }
 
 
@@ -546,19 +594,29 @@ console.log("kkkkkkkk")
   timezone: 'UTC'  // Optional: Specify the timezone if different from UTC
 });
 
+return true
 
 
   }
 
 
-  async RUnsubscribeNotification(value: any): Promise<any> {
-    console.log("valyeeeeeeeeeeeeeeeeeee")
-    console.log(value.endpoint)
+  
+
+
+  async RUnsubscribeNotification(value: any): Promise<boolean> {
+  
+
+
+    try{
 
     const deletedSubscription = await SubscriptionModel.findOneAndDelete({ endpoint: value.endpoint });
  
 
-    console.log(deletedSubscription)
+
+    return true
+    }catch(error){
+      throw error
+    }
 
 
   }
@@ -568,53 +626,69 @@ console.log("kkkkkkkk")
 
 
 
-  async RGetRandomProfileDetails(value: string): Promise<any> {
+  async RGetRandomProfileDetails(value: string): Promise<userList|null> {
     
+
+    try{
 
     const profileDetails=await UserModel.findById(value)
 
-    return profileDetails
+    if(!profileDetails){
+      return null
+    }
+
+    return profileDetails.toObject()
+
+  }catch(error){
+    throw error
+  }
+  
   }
 
 
-  async RfindBlockUnblockDetails(chatRoomId: any, userId: any): Promise<any> {
-     console.log("chatroooooooooommmmmmmmmmm detaaaaaaaaaaaaaaaaaaaaaaailllssssssssssssss")
-     let Id=userId.toString()
- console.log(chatRoomId,userId)
- console.log("here found found found found")
- console.log(Id)
+  async RfindBlockUnblockDetails(chatRoomId: ObjectId, userId: ObjectId): Promise<boolean> {
+   
+     const Id=userId.toString()
+
     
-    const response:any = await chatRoomModel.findOne(
+    const response:IChatroom|null = await chatRoomModel.findOne(
       { _id: { $in: chatRoomId }, 'members.userId': userId },
       
     )
 
+    if(!response){
+      return false
+    }
 
-    console.log("first response")
-    console.log(response)
-    console.log("current id")
-    console.log(Id)
+   
 
-     const status=response.members.find((a:any,b:any)=>{
+     const status=response.members.find((a,b)=>{
 
-      let str=a.userId.toString()
-        console.log(str)
+      
+
+      const str=a.userId.toString()
+    
       if(str==Id){
         return a
       }
      })
     
-     console.log("resposne statussssssssssssssssssssssssssssssssssssssss")
-     console.log(status)
-       return  status.status
+ 
+     if(status==undefined){
+      return false
+     }
+     return  status.status
+     
 
 
   }
 
 
-  async RpaymentSummary(subId: string, userId: string, paymentId: string, orderId: string): Promise<any> {
+  async RpaymentSummary(subId: string, userId: string, paymentId: string, orderId: string): Promise<paymentSummary> {
     
 
+
+    try{
 
     const userDetails=await UserModel.findById(userId)
     const searchSubscriptionDetails=await searchSubscriptionModel.findById(subId)
@@ -628,8 +702,6 @@ console.log("kkkkkkkk")
       {$inc:{maxSearch:inSubscriptionCount}}
     )
 
-    console.log("updated user detailssss")
-    console.log(updateUserDetails)
 
      const searchSubscriptionPaymentSummary={
        
@@ -657,7 +729,11 @@ console.log("kkkkkkkk")
 
      response.save()
 
-     return response
+     return response.toObject()
+
+    }catch(error){
+      throw error
+    }
 
 
   }
@@ -671,63 +747,84 @@ console.log("kkkkkkkk")
 
 
   
-  async RincrementSearchCount(userId: string): Promise<any> {
+  async RincrementSearchCount(userId: string): Promise<userDetails|null> {
         
 
+    try{
 
   const updateUser=await UserModel.findOneAndUpdate(
     {_id:userId},
     {$inc:{currSearch:1}}
   )
 
-  console.log("updatedddddddddddd userrrrrrrrrrrrrr")
-  console.log(updateUser)
+  if(!updateUser){
+    return null
+  }
+  
+  
 
-  return updateUser
+  return updateUser.toObject()
+}catch(error){
+  throw error
+}
 
   }
 
 
 
  
-   async RdisplayProfileDetails(userId: string): Promise<any> {
+   async RdisplayProfileDetails(userId: string): Promise<userList|null> {
      
 
+      try{
     const response=await UserModel.findById(userId)
 
-    return response
+    if(!response){
+      return null
+     }
+
+
+    return response?.toObject()
+      }catch(error){
+        throw error
+      }
    }
 
 
-   async RuploadUserProfileImage(userId: string, imageUrl: string): Promise<any> {
+
+
+   async RuploadUserProfileImage(userId: string, imageUrl: string): Promise<userList|null> {
      
 
-    console.log(imageUrl,userId)
-
+    
+  try{
 
     const resposne=await UserModel.findOneAndUpdate({_id:userId},{$push:{images:imageUrl}},{new:true})
 
+     if(!resposne){
+      return null
+     }
 
-    console.log(resposne)
-    console.log("lllllllllllllllllllllllllllllllllllllllllllllll")
+    return resposne?.toObject()
 
-
-    return resposne
+  }catch(error){
+    throw error
+  }
 
 
 
    }
 
-   async RdeleteProfileImage(userId: string, index: number): Promise<any> {
 
-    console.log(userId,index,"sdffffffffffsdfdsfdsfdsfsdfdsfdsf")
-     
-    interface  USER{
-      images:string[]
-    }
-        // @ts-ignore
-    const user:USER = await UserModel.findById(userId)
 
+   async RdeleteProfileImage(userId: string, index: number): Promise<boolean> {
+
+    
+      try{
+    
+    const user:userDetails|null = await UserModel.findById(userId)
+
+    
     
     if(user){
        
@@ -735,18 +832,22 @@ console.log("kkkkkkkk")
 
 
     
-     // @ts-ignore
+     
     await user.save();
-  console.log("datedddddddddddddddddddddddddd")
-    console.log(user)
+
+   
     return true
-    }else{
-      console.log("nulllll")
     }
 
+  return false
 
+   
+   }catch(error){
+    throw error
+  }
 
-    // const resposne=await UserModel.findOneAndRemove
-   }
+ 
   
+}
+
 }

@@ -1,16 +1,18 @@
 
 import "reflect-metadata";
 
-import { IUserInteractor } from "../interfaces/user/IUserInteractor";
-import { IUserRepository } from "../interfaces/user/IUserRepository";
-import { INTERFACE_TYPE } from "../utils/appConst";
-import { User,findUser } from "../entities/user";
+import { IUserInteractor } from "../../interfaces/user/IUserInteractor";
+import { IUserRepository } from "../../interfaces/user/IUserRepository";
+import { INTERFACE_TYPE } from "../../utils/appConst";
+import { User,findUser, googleLoginInterface, userList, userOtp } from "../../entities/user";
 import bcrypt from 'bcrypt';
 
 import Joi, { Err, string } from 'joi';
-import { accessToken,refreshToken, verifyRefreshToken } from "../services/jwtService";
-import { Schema } from "mongoose";
+import { accessToken,refreshToken, verifyRefreshToken } from "../../services/jwtService";
+import { NullExpression, Schema } from "mongoose";
 import { response } from "express";
+import { SubscriptionType } from "../../entities/searchSubscription";
+import { MyObject } from "../../entities/locationDetails";
 
 
 
@@ -34,27 +36,19 @@ export class UserInteractor implements IUserInteractor{
           })
           
 
-        //   const checkEmail=await this.repository.findUser(userName)
-
-        //   console.log(checkEmail)
-
-        //   if(!checkEmail){
-            
-        //     return false
-        //   }
-          
+        
 const SALT_ROUNDS = 10;
            console.log(SALT_ROUNDS)
            console.log(password)
           password = await bcrypt.hash(password, SALT_ROUNDS);
 
           
-        const data=await this.repository.create({userName,dob,gender,email,password})
+        const data:userList=await this.repository.create({userName,dob,gender,email,password})
 
-        // @ts-ignore
-        const Accesstoken=await  accessToken(data.userName,data.email,data._id)
-         // @ts-ignore
-        const RefreshToken=await refreshToken(data.userName,data._id)
+       
+        const Accesstoken:string=await  accessToken(data.userName,data.email,data._id)
+       
+        const RefreshToken:string=await refreshToken(data.userName,data._id)
         console.log(Accesstoken)
     
        console.log("here        token        toe toenm ekjsefhiusfjosd fjdsiojp           have            aces ")
@@ -69,11 +63,11 @@ const SALT_ROUNDS = 10;
 
 
 
-     async refreshToken(id:string,username:string,userId:string): Promise<any> {
+     async refreshToken(id:string,username:string,userId:string): Promise<string> {
            
        
        
-           let token =await verifyRefreshToken(id,username,userId)
+           const token =await verifyRefreshToken(id,username,userId)
 
            console.log("tokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnneeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
            console.log(token)
@@ -84,7 +78,7 @@ const SALT_ROUNDS = 10;
     }
 
 
-     async IfindUser(input:findUser): Promise<any> {
+     async IfindUser(input:findUser): Promise<MyObject[]> {
 
      console.log("a m hereeeeeeeeeeeee at inteeeeteractor rrrrrrrrrrr")
      
@@ -108,7 +102,7 @@ const SALT_ROUNDS = 10;
      console.log(" i suer login")
      console.log(email)
 
-        let ifUser=await this.repository.RuserLogin(email,password)
+        let ifUser:any=await this.repository.RuserLogin(email,password)
 
         if(ifUser){
           
@@ -127,24 +121,21 @@ const SALT_ROUNDS = 10;
 
 
 
-    //  async Igetusers(): Promise<any> {
-        
-    //     let allUsers=await this.repository.Rgetusers()
-
-    //     return allUsers
-    // }
 
 
 
-     async IgoogleLogin(email: string): Promise<any> {
+
+     async IgoogleLogin(email: string): Promise<googleLoginInterface|null> {
         
 
-        let data=await this.repository.RgoogleLogin(email)
+        const data:userList|null=await this.repository.RgoogleLogin(email)
 
+        if(!data){
+            return null
+        }
 
-
-        let Accesstoken=await accessToken(data.userName,email,data._id)
-      const RefreshToken=await refreshToken(data.userName,data._id)
+        const  Accesstoken:string=await accessToken(data.userName,email,data._id)
+      const RefreshToken:string=await refreshToken(data.userName,data._id)
 
       return {data,Accesstoken,RefreshToken}
 
@@ -156,7 +147,7 @@ const SALT_ROUNDS = 10;
         return response
     }
 
-     async IsaveLocation(longitude: any, latitude: any,userId:any): Promise<any> {
+     async IsaveLocation(longitude: number, latitude: number,userId:string): Promise<boolean> {
 
         let response=await this.repository.RsaveLocation(longitude,latitude,userId)
 
@@ -164,14 +155,14 @@ const SALT_ROUNDS = 10;
         
     }
     
-    async IsendOtp(email: string, otp: string): Promise<any> {
+    async IsendOtp(email: string, otp: string): Promise<userOtp> {
         console.log(" send  otpppppppppppppppppppp")
         let response=await this.repository.RsendOtp(email,otp)
         return response
         
     }
 
-    async IverifyOtp(email: string, otp: string): Promise<any> {
+    async IverifyOtp(email: string, otp: string): Promise<Boolean> {
         console.log("verifyfyyyyyyyyyyyyyy otpppppppppppppppppppppppppppp")
 
         let response=await this.repository.RverifyOtp(email,otp)
@@ -180,7 +171,7 @@ const SALT_ROUNDS = 10;
     }
 
 
-    async IeditUserDetails(userId:string,userName: string, dob: string, gender: string): Promise<any> {
+    async IeditUserDetails(userId:string,userName: string, dob: string, gender: string): Promise<userList|null> {
         
         const response=await this.repository.ReditUserDetails(userId,userName,dob,gender)
         
@@ -188,9 +179,12 @@ const SALT_ROUNDS = 10;
     }
 
 
-    async IgetOrderSummary(userId: string): Promise<any> {
+    async IgetOrderSummary(userId: string): Promise<SubscriptionType[]|null> {
         
         const response=await this.repository.RgetOrderSummary(userId)
+        if(!response){
+            return null
+        }
 
         return response
     }
@@ -198,7 +192,7 @@ const SALT_ROUNDS = 10;
 
 
 
-  async IchangePassword(userId:string,password: string): Promise<any> {
+  async IchangePassword(userId:string,password: string): Promise<userList|null> {
     
 const SALT_ROUNDS = 10;
 

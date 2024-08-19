@@ -1,42 +1,47 @@
-import jwt, { Secret } from "jsonwebtoken";
+
 import { NextFunction, Request, Response } from "express";
-import { ObjectId } from "mongoose";
-import { UserRepository } from "../repositories/userRepository";
-import { userListRepository } from "../repositories/admin/userListRepository";
-import { INTERFACE_TYPE } from "../utils/appConst";
 
-import { IUserRepository } from "../interfaces/user/IUserRepository";
-
-// import { container } from "../routes/userRoute";
+import { UserRepository } from "../repositories/user/userRepository";
 
 
-// const userRepo=container.get<IUserRepository>(INTERFACE_TYPE.UserRepository)
+import { decoded, userList } from "../entities/user";
+
+
+
 
 const userRepo=new  UserRepository()
 
 
+
+
 interface CustomRequest extends Request {
-    user?: any; // You can replace 'any' with a more specific type if you know the shape of 'user'
+    user?: decoded
   }
   
+
 
  
 
 export const checkRole=(roles:string[])=>async(req:CustomRequest,res:Response,next:NextFunction)=>{
 
-    let decoded=req.user
-    console.log(decoded)
-    console.log("decoedddddddddddddddddd")
+    const decoded=req.user
+    if(!decoded){
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-    const ans=await userRepo.RoleBasedAuthentication(decoded.id)
-    console.log(ans)
-  console.log("Kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+
+    const ans:userList|null=await userRepo.RoleBasedAuthentication(decoded.id)
+   
+    if(!ans){
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
    if(roles.includes(ans?.role)){
-    console.log("0000000000")
+   
     next()
 
     }else{
-      console.log("nnnnnnnnnnnnnnnnnnnnnnn")
+     
       return res.status(402).json({message:"not acces to this route"}) 
     }
 

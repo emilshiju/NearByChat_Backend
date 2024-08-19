@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { inject, injectable } from "inversify";
 
-
-import { INTERFACE_TYPE } from "../../utils/appConst";
-
-import axios from "axios";
 import dotenv from "dotenv"
 
 
@@ -26,16 +21,10 @@ import { Conversation } from "../../entities/conversation";
 dotenv.config();
 
 
-// @injectable()
-
 
 export class conversationController{
     private interactor:IConversationInteractor;
-    // constructor(
-    //     @inject(INTERFACE_TYPE.ConversationInteractor)  interactor:IConversationInteractor
-    // ){
-    //     this.interactor=interactor
-    // }
+   
 
     constructor(interactor: IConversationInteractor) {
         this.interactor = interactor;
@@ -46,15 +35,14 @@ export class conversationController{
 
 
         try{
-        console.log("chat rommmmmmmmmmmm chat rommmmm chat rommmmmmmmmmmmmmmm chat rom mmmmmmmmmmmmmmmmmmmmmmmmm")
-            let {receiverId,userId}=req.body
+        
+            const {receiverId,userId}=req.body
           
            
             const inputs=new Conversation([receiverId,userId])
            
-            const response=await this.interactor.IConversation(inputs)
-            console.log("kkkkkk       7777      kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-               console.log(response.chatroom)
+            const response:any=await this.interactor.IConversation(inputs)
+           
             if(response&&response.allChat){
                 
                     return res.json({chat:response.allChat,profile:response.profile,chatroom:response.chatroom})
@@ -71,14 +59,17 @@ export class conversationController{
 
         }catch(error){
 
-            console.log(error)
+            next(error)
         }
     }
 
 
     async onCreateChatRoom(req:Request,res:Response,next:NextFunction){
        
-        let {receiverId,userId}=req.body
+
+        try{
+
+        const {receiverId,userId}=req.body
           
            
             const input=new Conversation([receiverId,userId])
@@ -87,20 +78,29 @@ export class conversationController{
 
             return res.json({response})
 
+        }catch(error){
+            next(error)
+        }
+
     }
 
     async getAllConversastion(req:Request,res:Response,next:NextFunction){
 
-        // const receiverId=req.params.receiverId
+
+
+        try{
+        
         const userId=req.query.userId as string; 
-        console.log("hereeeeeeeeeeeeeeeeeeeeeeeeee  232323232323")
-        console.log(userId)
-   
+       
 
         const response=await this.interactor.IGetAllConversation(userId)
 
 
         return res.json({allChat:response})
+
+        }catch(error){
+            next(error)
+        }
         
 
 
@@ -108,15 +108,17 @@ export class conversationController{
 
 
     async onSaveChatImage(req:Request,res:Response,next:NextFunction){
-        console.log("etiiiiiiiiiiiiiiiiiiiiiiiiiiiii poyeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-console.log(req.file)
+       
+
+        try{
+
         if(req.file){
-            console.log("keriiiiiiiiiiiiiii")
+           
 
         const result = await cloudinary.uploader.upload(req.file.path , {
             folder:'/nearbychat'
             });
-        console.log(result)
+      
 
         if(result){
             return res.json({status:true,result})
@@ -125,43 +127,40 @@ console.log(req.file)
 
         }
 
+    }catch(error){
+        next(error)
+    }
 
 
     }
 
 
     async onClearChat(req:Request,res:Response,next:NextFunction){
-           console.log("kkkk vanuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu")
+       
+
+        try{
+
         const {selectedUserId,userId}=req.body
-        console.log("delteddddddddddddddddddddddddddddddddddddddddddddddddddddddd  userrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-        console.log(selectedUserId)
+        
         const response=await this.interactor.IDeleteChat(selectedUserId,userId)
+
+        }catch(error){
+            next(error)
+        }
 
         
     }
 
 
-    // async onDeleteAllMessages(req:Request,res:Response,next:NextFunction){
-
-
-    //     const { messagesId }=req.body
-    //     console.log("messsssssssss ")
-    //     console.log(messagesId)
-
-    //     const response=await this.interactor.IDeleteAllMessages(messagesId)
-  
-
-    //     return res.status(200).json({status:true})
-    // }
-   
+    
 
      async onDeleteSingleChat(req:Request,res:Response,next:NextFunction){
 
-
+          
+        try{
 
         const {chatRoomId,userId} = req.body
-        console.log("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-        console.log(chatRoomId,userId)
+       
 
         const response=await this.interactor.IDeleteSingleChat(chatRoomId,userId)
           
@@ -169,7 +168,12 @@ console.log(req.file)
           return res.json({status:true})
 
         }
-        console.log("errrrrrrrrrrrrrorrrrrrrrrrrrrrrrrrrr")
+
+    }catch(error){
+        next(error)
+    }
+       
+
      }
      
 
@@ -177,21 +181,26 @@ console.log(req.file)
      async OnuserTouserBlock(req:Request,res:Response,next:NextFunction){
     
 
+
+        try{
         const {chatRoomId,userId}=req.body
-    console.log(req.body)
-        console.log("user to user block vanuu   chatRoomId userId chatroomid chatroomid userid userid userid" )
-        console.log(userId,chatRoomId)
+    
 
         const response=await this.interactor.IuserTouserBlock(chatRoomId,userId)
          
 
         return res.json({data:response})
+        }catch(error){
+            next(error)
+        }
         
      }
 
+
+
      async OnuserTouserUnblock(req:Request,res:Response,next:NextFunction){
      
-         console.log("sencd vanu second vanu second vanu")
+        try{
 
         const {chatRoomId,userId}=req.body
         
@@ -199,6 +208,10 @@ console.log(req.file)
         const response=await this.interactor.IuserTouserUnblock(chatRoomId,userId)
 
         return res.json({data:response})
+
+        }catch(error){
+            next(error)
+        }
      }
 
 

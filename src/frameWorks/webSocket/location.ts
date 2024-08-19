@@ -1,9 +1,9 @@
 
-import socketIo ,{Server}from "socket.io"
-import mongoose from "mongoose";
-import  {locationRepository} from "../../repositories/locationRepository"
+import {Server}from "socket.io"
 
-import { ProfileRepository } from "../../repositories/profileRepository";
+
+
+import { ProfileRepository } from "../../repositories/user/profileRepository";
 
 import { Schema } from "mongoose";
 
@@ -11,21 +11,16 @@ import { Schema } from "mongoose";
 
 
 
-import { IPofileRepository } from "../../interfaces/user/profile/IProfileRepository";
-import { INTERFACE_TYPE } from "../../utils/appConst";
-import { Container } from "inversify";
 
-// import {container} from "../../routes/profileRoute"
-// import { conversationContainer } from "../../routes/conversation";
-import { IConversationRepository } from "../../interfaces/user/conversation/IConversationRepository";
-import { UserRepository } from "../../repositories/userRepository";
-import { Console } from "console";
+
+
+
 import { conversationRepository } from "../../repositories/user/conversationRepository";
-// const container=new Container()
-// const profileRepo=container.get<IPofileRepository>(INTERFACE_TYPE.ProfileRepository)
-// const conversationRepo=conversationContainer.get<IConversationRepository>(INTERFACE_TYPE.ConversationRepository)
+
+import { acceptRequest, notificationDisplayDetails, senderNotification } from "../../entities/notification";
+
 const conversationRepo=new conversationRepository()
-const repository = new locationRepository ();
+
 const profileRepo=new ProfileRepository()
 
 
@@ -56,6 +51,7 @@ const socketConfig=(io:Server)=>{
     //   connectionRequest
 
     socket.on('connectionNotification',async(senderId:Schema.Types.ObjectId,receiverId:Schema.Types.ObjectId,senderName:string,userProfileId:Schema.Types.ObjectId,receiverProfileId:Schema.Types.ObjectId)=>{
+      
        
        let response=await  profileRepo.RconnectionNotification(senderName,senderId,receiverId,userProfileId,receiverProfileId)
    
@@ -83,10 +79,13 @@ const socketConfig=(io:Server)=>{
     socket.on('acceptedRequest',async(senderId,receiverId)=>{
    
   
-      let response= await profileRepo.acceptedRequest(senderId,receiverId)
+      const response:acceptRequest|null= await profileRepo.acceptedRequest(senderId,receiverId)
     
+      if(!response){
+        return 
+      }
       
-       let senderOne=response.senderId._id.toString()
+       let senderOne=response?.senderId._id.toString()
     
       if(connectedClients){
       
@@ -113,14 +112,19 @@ const socketConfig=(io:Server)=>{
 
     socket.on('connectionRequested',async(userName,senderId,receiverId)=>{
          
-        let response=await profileRepo.connectionRequest(userName,senderId,receiverId)
+        let response:senderNotification=await profileRepo.connectionRequest(userName,senderId,receiverId)
    
+
+        // const senderString = response.sender.toString();
+const receiverString = response.receiverId.toString();
+
+
         if(response){
         
     
-            if(connectedClients[response.receiverId]){
+            if(connectedClients[receiverString]){
                 
-                io.to(connectedClients[response.receiverId]).emit('notification', response);
+                io.to(connectedClients[receiverString]).emit('notification', response);
           
             
             }else{
@@ -150,15 +154,20 @@ const socketConfig=(io:Server)=>{
 
          const response=await profileRepo.RUnConnectUser(delteSenderId,deleteReceiverId)
         
+       
+
          if(response){
+          const receiverString = response.receiverId.toString();
+         
+                    
             
     
-            if(connectedClients[response.receiverId]){
+            if(connectedClients[receiverString]){
 
-                let receiverOne=response.receiverId.toString()
                 
                 
-                io.to(connectedClients[receiverOne]).emit('updateConnectionStatus');
+                
+                io.to(connectedClients[receiverString]).emit('updateConnectionStatus');
             
             
             }else{
@@ -186,22 +195,27 @@ const socketConfig=(io:Server)=>{
 
     socket.on('sendMessage',async(chatRoomId,userId,receiverId,textMessage)=>{
 
-    
+         
         
         const response=await conversationRepo.RsendMessage(chatRoomId,userId,receiverId,textMessage)
 
-        console.log("messssssssageeeeeeeeeeeeeeeeee sendddddddddddddddddddddddddddddddddd")
-        console.log(response)
+        
+
+
 
         if(response){
 
-
+const senderString = response.sender.toString();
+const receiverString = response.receiver.toString();
           
       
-            io.to(connectedClients[response.sender]).emit('newMessage', response);
+            io.to(connectedClients[senderString]).emit('newMessage', response);
             // io.to(connectedClients[response.receiver]).emit('newMessage', response);
 
-            const userDetails=await profileRepo.findUserDetails(response.receiver)
+            const userDetails:notificationDisplayDetails|null=await profileRepo.findUserDetails(response.receiver)
+            if(!userDetails){
+              return 
+            }
             const findBlockorUnBock=await profileRepo.RfindBlockUnblockDetails(response.chatroom,response.receiver)
                     const messageNotification={
                         message:response.message,
@@ -210,10 +224,10 @@ const socketConfig=(io:Server)=>{
                         currentStatus:findBlockorUnBock
                     }
                     if(!findBlockorUnBock){
-                      io.to(connectedClients[response.receiver]).emit('newMessage', response);
+                      io.to(connectedClients[receiverString]).emit('newMessage', response);
                     }
                   
-                    io.to(connectedClients[response.receiver]).emit('newMessageNotification',messageNotification);
+                    io.to(connectedClients[receiverString]).emit('newMessageNotification',messageNotification);
    
         }
 
@@ -226,7 +240,7 @@ const socketConfig=(io:Server)=>{
     socket.on('checkUserForVideoCall',async(localId,remoteId)=>{
     
         if(connectedClients[remoteId]){
-            console.log("checking 123 321 ")
+            
             
             let response=await profileRepo.RgetProfileDetails(localId)
           
@@ -285,13 +299,7 @@ const socketConfig=(io:Server)=>{
           
 
 
-        console.log("delted message")
-        console.log(messagesId)
-        console.log("sender")
-        console.log(senderId)
-        console.log("receiverId")
-        console.log(receiverId)
-        console.log("finish")
+       
         const response=await conversationRepo.RDeleteAllMessages(messagesId)
 
         if(response){
@@ -319,11 +327,9 @@ const socketConfig=(io:Server)=>{
       })
 
       socket.on('blockuserlive',async(userDetail)=>{
-           console.log("blockuser user useir useizr 00000000000000000000000000000000000000000000000000000")
-  console.log(userDetail)
-  console.log("jsdfidsfhidshf")
+           
            if(connectedClients[userDetail.id]){
-            console.log("123 123 blockuser user useir useizr ")
+           
             io.to(connectedClients[userDetail.id]).emit('blockedUser');
 
         }else{
@@ -361,15 +367,9 @@ const socketConfig=(io:Server)=>{
           {
             console.log(userId)
             if(userId!==currentUserId){
-                console.log("keri ivide")
-                console.log(userId)
-                console.log("first")
-                console.log(matchedUsers)
-                // let res=matchedUsers.some(pair=>pair.includes(userId))
+               
                 let res=matchedUsers.includes(userId)
-                console.log("matched")
-                console.log(matchedUsers)
-                console.log(res)
+              
                 if(!res){
                     return userId
                 }
@@ -378,9 +378,7 @@ const socketConfig=(io:Server)=>{
           }
         )
 
-     console.log("aviable users")
-     console.log(availableUsers)
-     console.log("sotp")
+    
         if(availableUsers.length>0){
             const randomIndex = Math.floor(Math.random() * availableUsers.length);
             return availableUsers[randomIndex]
@@ -393,9 +391,6 @@ const socketConfig=(io:Server)=>{
          
       socket.on('readyToChat',async(userId)=>{
 
-        console.log("user"+userId)
-console.log("yes ready to chat  fffffffffffffffffffffffffffffffffffffffffffffffffff  000000000000000000000000000000000000000")
-console.log(readyForRandomConnection)
      if(!readyForRandomConnection.includes(userId)){
         readyForRandomConnection.push(userId)
 
@@ -406,17 +401,12 @@ console.log(readyForRandomConnection)
                let  randomUserId=await getRandomUser(userId)
           
         
-        console.log(randomUserId)
-        console.log("randomuseId")
-        console.log(matchedUsers)
+       
         if(randomUserId!==undefined){
 
-            console.log("9847474")
-            console.log(readyForRandomConnection)
             matchedUsers.push(userId)
             matchedUsers.push(randomUserId)
-           console.log(userId)
-           console.log(randomUserId)
+           
         
 
            let currentUserIndex=readyForRandomConnection.indexOf(userId)
@@ -427,21 +417,14 @@ console.log(readyForRandomConnection)
 
           
       if(readyForRandomConnection[currentUserIndex]){
-        console.log("first piy8i")
-        console.log(userId)
-        console.log(randomUserId)
+       
         try{
            
           let a=  readyForRandomConnection[currentUserIndex]
-          console.log(connectedClients[a])
-          console.log("first poyiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-          console.log(userId)
-          console.log(randomUserId)
+          
 
         
-          // const randomProfileDetails=await profileRepo.RGetRandomProfileDetails(randomUserId)
-          console.log("matchedddddddddddddddddddd usersssss")
-          console.log(matchedUsers)
+          
 
 
           // io.to(connectedClients[a]).emit('ready',userId,randomUserId);
@@ -463,10 +446,7 @@ console.log(readyForRandomConnection)
 
         console.log(readyForRandomConnection[oppositeOneIndex])
         let b=readyForRandomConnection[oppositeOneIndex]
-        console.log(connectedClients[b])
-        console.log("second poyiiiiiiii")
-        console.log(userId)
-        console.log(randomUserId)
+        
         // const randomProfileDetails=await profileRepo.RGetRandomProfileDetails(randomUserId)
 
         io.to(connectedClients[b]).emit('ready',randomUserId,userId);
@@ -484,9 +464,7 @@ console.log(readyForRandomConnection)
      // random video connectoin 
 
       socket.on("readytochat", (message) => {
-        console.log(message.id)
-        console.log("here here")
-        console.log(message.id)
+      
         // socket.broadcast.emit("message", message);
         console.log(connectedClients)
         io.to(connectedClients[message.id]).emit("readytochat", message)
@@ -518,8 +496,7 @@ console.log(readyForRandomConnection)
 
       socket.on('removeUsersArray',(res)=>{
         const {userId,receiver}=res
-          console.log("removed removed removed removed removed")
-          console.log(userId   ,receiver)
+          
         if(readyForRandomConnection.includes(userId)){
             let currentuserIdIndex=readyForRandomConnection.indexOf(userId)
              readyForRandomConnection.splice(currentuserIdIndex,1)
@@ -534,9 +511,7 @@ console.log(readyForRandomConnection)
           readyForRandomConnection.splice(oppositeUserIndex,1)
           let currentMatchedUserIndex=matchedUsers.indexOf(receiver)
           matchedUsers.splice(currentMatchedUserIndex,1)
-          console.log("ished")
-          console.log(readyForRandomConnection)
-          console.log("all removed all removed")
+         
         }
 
        
@@ -548,10 +523,7 @@ console.log(readyForRandomConnection)
 
 
       socket.on("randomVideoConnection", (message) => {
-        console.log(message)
-        console.log("vanuloooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
-        console.log("here here")
-        console.log(message.id)
+       
 
 
 
@@ -579,10 +551,7 @@ console.log(readyForRandomConnection)
         let oppositeUserIndex=readyForRandomConnection.indexOf(receiverId)
           // readyForRandomConnection.splice(oppositeUserIndex,1)
           matchedUsers.splice(oppositeUserIndex,1)
-        console.log("aftereeeeeeeeeeeeeeeeee deletingggggggggggggggggggggggggggggggggggggggggggggggggg")
-        console.log(readyForRandomConnection)
-        console.log("mathcedddddddddddddd")
-        console.log(matchedUsers)
+        
           
 
       })
@@ -608,7 +577,7 @@ console.log(readyForRandomConnection)
       // randomChatMessage
 
       socket.on('randomChatMessage',(res)=>{
-    console.log("randomchatttttttttttttttttttttttt messsssssssageeeee")
+    
         const {userId,receiver,message}=res
 
         console.log(res)
@@ -651,18 +620,13 @@ console.log(readyForRandomConnection)
 
 
       socket.on('userTouserOnlyRandomChat',(userId)=>{
-        console.log(readyForOnlyRandomChat)
-        console.log(alredyRandomChatting)
-        console.log(userId)
-        console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+        
 
          readyForOnlyRandomChat.push(userId)
          
          
          let getFreeUser=findUserForOnlyChat(userId)
-            console.log("gotttttttttttttttttttttttttttttttt userrrrrrrr")
-            console.log(getFreeUser)
-            console.log(userId)
+          
          if(getFreeUser!==undefined){
 
 
@@ -692,10 +656,7 @@ console.log(readyForRandomConnection)
       
       socket.on('userTouserLiveChatting',(res)=>{
 
-        console.log("ivide vanuuuuu")
-
-
-console.log(res)
+        
          const {userId,receiver,message}=res
 
        console.log(connectedClients)
@@ -712,9 +673,7 @@ console.log(res)
 
 
       socket.on('userTouserOnlyRandomChatSkip',(userId,oppositeUserId)=>{
-       console.log("firstttttttt")
-       console.log(readyForOnlyRandomChat)
-  console.log(userId,oppositeUserId)
+     
 
         if(userId){
 
@@ -818,29 +777,4 @@ export default socketConfig
 
 
 
-// socket.on("ready",()=>{
-//     if (pc) {
-//       alert("already in call ignoreing")
-//       console.log("already in call, ignoring");
-//       return;
-//     }
-//     makeCall();
-//   })
-  
-//   socket.on('candidate',(message)=>{
-//     handleCandidate(message);
-//   })
-  
-//   socket.on('offer',(message)=>{
-//     handleOffer(message);
-//   })
-  
-//   socket.on('answer',(messge)=>{
-//     handleAnswer(messge);
-//   })
-  
-//   socket.on('bye',()=>{
-//     if (pc) {
-//       hangup();
-//     }
-//   })
+

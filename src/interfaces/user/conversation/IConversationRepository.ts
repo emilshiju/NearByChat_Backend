@@ -1,19 +1,20 @@
-import { Conversation } from "../../../entities/conversation";
+import { ChatMessage, CombinedType, Conversation, IChatroom } from "../../../entities/conversation";
 
 
 
 
-
+import { DeleteResult, UpdateResult } from 'mongodb';
+import { userList } from "../../../entities/user";
 
 
 export interface IConversationRepository{
-     RConversation(input:Conversation):Promise<any>
-     RCreateChatRoom(input:Conversation):Promise<any>
-     RsendMessage(chatRoomId:string,userId:string,receiverId:string,textMessage:string):Promise<any>
+     RConversation(input:Conversation):Promise<CombinedType|null|userList>
+     RCreateChatRoom(input:Conversation):Promise<IChatroom|null>
+     RsendMessage(chatRoomId:string,userId:string,receiverId:string,textMessage:string):Promise<ChatMessage|null>
      RGetAllConversation(userId:string):Promise<any>
-     RDelteChat(selectedUserId:string,userId:string):Promise<any>
-     RDeleteAllMessages(messagesId:string[]):Promise<any>
-     RDeleteSingleChat(chatRoomId:any,userId:any):Promise<any>
-     RuserTouserBlock(chatRoomId:any,userId:any):Promise<any>
-     RuserTouserUnblock(chatRoomId:any,userId:any):Promise<any>
+     RDelteChat(selectedUserId:string,userId:string):Promise<null>
+     RDeleteAllMessages(messagesId:string[]):Promise<DeleteResult>
+     RDeleteSingleChat(chatRoomId:string,userId:string):Promise<UpdateResult>
+     RuserTouserBlock(chatRoomId:string,userId:string):Promise<UpdateResult>
+     RuserTouserUnblock(chatRoomId:string,userId:string):Promise<UpdateResult>
 }
