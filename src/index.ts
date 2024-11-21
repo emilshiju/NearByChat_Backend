@@ -38,6 +38,7 @@ socketConfig(io);
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
+  "https://siof.site",
   "https://near-by-chat-frontend-six.vercel.app",
   "https://anonymous10.cloud",
   "https://near-by-chat-frontend-livid.vercel.app",

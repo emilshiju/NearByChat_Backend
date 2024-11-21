@@ -126,10 +126,10 @@ export class userListRepository implements IUserListRepository {
         .populate("reportedUser", "nickName  email")
         .lean();
 
-      const sorted:any = [];
+      const sorted: any = [];
 
       for (let rep of response) {
-        const checkStatus = sorted.find((a:any) => {
+        const checkStatus = sorted.find((a: any) => {
           return (
             a.reporter.email == rep.reporter.email &&
             a.reportedUser.email == rep.reportedUser.email
@@ -244,16 +244,12 @@ export class userListRepository implements IUserListRepository {
     }
   }
 
-
-
-
-
   async RonSaveSearchSubscription(
     value: searchSubscription
   ): Promise<searchSubscription | boolean> {
     try {
       const sumOfSub = await searchSubscriptionModel.find({});
-      
+
       if (sumOfSub.length >= 3) {
         return false;
       }
@@ -262,44 +258,34 @@ export class userListRepository implements IUserListRepository {
 
       return response;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
-
-
-
-
 
   async RgetAllSearchSubscription(): Promise<searchSubscription[]> {
-    try{
-    const response = await searchSubscriptionModel.find();
+    try {
+      const response = await searchSubscriptionModel.find();
 
-    return response;
-    }catch(error){
-      throw  error
+      return response;
+    } catch (error) {
+      throw error;
     }
   }
-
 
   async RgetAllPaymentSubscription(): Promise<SubscriptionArray[] | null> {
+    try {
+      const response: SubscriptionArray[] | null =
+        await paymentSummaryModel.find({});
 
+      if (!response) {
+        return null;
+      }
 
-    try{
-    const response: SubscriptionArray[] | null = await paymentSummaryModel.find(
-      {}
-    );
-
-    if (!response) {
-      return null;
+      return response;
+    } catch (error) {
+      throw error;
     }
-
-    return response;
-  }catch(error){
-    throw error
   }
-  }
-
-
 
   async RgetDashboard(): Promise<ResponseData> {
     // getting daily sale amount
@@ -488,85 +474,66 @@ export class userListRepository implements IUserListRepository {
     };
   }
 
-
-
-
   async RgetOneSubscriptionDetails(
     id: string
   ): Promise<SubscriptionType | null> {
+    try {
+      const response = await paymentSummaryModel.findById(id);
 
-    try{
-    const response = await paymentSummaryModel.findById(id);
-   
-    return response as SubscriptionType | null;
-    }catch(error){
-      throw error
+      return response as SubscriptionType | null;
+    } catch (error) {
+      throw error;
     }
   }
-
-
 
   async RgetCurrentSearchSubscription(
     id: string
   ): Promise<searchSubscription | null> {
-    
-    try{
-    const response = await searchSubscriptionModel.findById(id);
-    
+    try {
+      const response = await searchSubscriptionModel.findById(id);
 
-    return response as searchSubscription | null;
-
-    }catch(error){
-      throw error
+      return response as searchSubscription | null;
+    } catch (error) {
+      throw error;
     }
   }
-
-
 
   async RupdateSearchSubscription(
     value: searchSubscription,
     id: string
   ): Promise<searchSubscription | null> {
-  
-    try{
-
-    const response = await searchSubscriptionModel.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          name: value.name,
-          maxCount: value.maxCount,
-          price: value.price,
-          timePeriod: value.timePeriod,
-          imageUrl: value.imageUrl,
+    try {
+      const response = await searchSubscriptionModel.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            name: value.name,
+            maxCount: value.maxCount,
+            price: value.price,
+            timePeriod: value.timePeriod,
+            imageUrl: value.imageUrl,
+          },
         },
-      },
-      {
-        new: true,
-      }
-    );
+        {
+          new: true,
+        }
+      );
 
-    
-    return response;
-
-  }catch(error){
-    throw error
-  }
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async RdeleteSearchSubscription(
     id: string
   ): Promise<searchSubscription | null> {
-   
-    try{
+    try {
+      const response = await searchSubscriptionModel.findByIdAndDelete(id);
 
-    const response = await searchSubscriptionModel.findByIdAndDelete(id);
-
-
-
-    return response;
-    }catch(error){
-      throw error
+      return response;
+    } catch (error) {
+      throw error;
     }
   }
 }
