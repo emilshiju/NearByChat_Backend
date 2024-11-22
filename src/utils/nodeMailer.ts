@@ -4,13 +4,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
+  host: process.env.SMTP_HOST || 'smtp.example.com',
 
   port: 465,
   secure: true, // Use SSL
   auth: {
-    user: process.env.SMTP_MAIL,
-    pass: process.env.SMTP_APP_PASS,
+    user: process.env.SMTP_MAIL || 'emilshiju10@gmail.com',
+    pass: process.env.SMTP_APP_PASS|| 'kjxh bmbj wvwo bgpb',
   },
   authMethod: "LOGIN", // Specify the authentication method
 });
