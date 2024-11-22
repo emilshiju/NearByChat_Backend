@@ -158,6 +158,7 @@ const SALT_ROUNDS = 10;
     async IsendOtp(email: string, otp: string): Promise<userOtp> {
         console.log(" send  otpppppppppppppppppppp")
         let response=await this.repository.RsendOtp(email,otp)
+        console.log("yes")
         return response
         
     }
