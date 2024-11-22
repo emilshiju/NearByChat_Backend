@@ -176,6 +176,7 @@ export class UserRepository implements IUserRepository {
       a.save();
 
       return a.toObject();
+      console.log("get user details")
     } catch (error) {
       throw error;
     }

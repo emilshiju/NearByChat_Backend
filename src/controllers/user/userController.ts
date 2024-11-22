@@ -417,7 +417,7 @@ return res.json({status:false})
     const otp:string = generateOTP();
 
     const response:userOtp=await this.interactor.IsendOtp(email,otp)
-   
+    console.log("get response",response)
 
     interface MailOptions {
       from: string;
