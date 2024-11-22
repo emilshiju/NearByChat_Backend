@@ -425,6 +425,8 @@ return res.json({status:false})
       subject: string;
       text: string;
   }
+  console.log("off useeeeeeeeeerrr")
+  console.log(response.email)
 
      const mailOptions: MailOptions = {
            from: 'nearByChat@gmail.com',  // Change this to your email
