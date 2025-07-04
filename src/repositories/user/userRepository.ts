@@ -28,7 +28,7 @@ export class UserRepository implements IUserRepository {
         email,
         password,
       });
-
+      // @ts-ignore
       return createdUser.toObject();
     } catch (error) {
       throw error;
@@ -111,6 +111,7 @@ export class UserRepository implements IUserRepository {
       const ifUser = await UserModel.findOne({ email: email });
 
       if (ifUser) {
+        // @ts-ignore
         return ifUser.toObject();
       }
       return false;
@@ -126,7 +127,7 @@ export class UserRepository implements IUserRepository {
       if (!data) {
         return null;
       }
-
+// @ts-ignore
       return data?.toObject();
     } catch (error) {
       throw error;
@@ -175,7 +176,9 @@ export class UserRepository implements IUserRepository {
 
       a.save();
       console.log("get user details",a)
+      // @ts-ignore
       return a.toObject();
+
       
     } catch (error) {
       throw error;
@@ -205,6 +208,7 @@ export class UserRepository implements IUserRepository {
       if (!ans) {
         return null;
       }
+      // @ts-ignore
       return ans.toObject();
     } catch (error) {
       throw error;

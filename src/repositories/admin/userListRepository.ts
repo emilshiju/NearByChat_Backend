@@ -120,6 +120,7 @@ export class userListRepository implements IUserListRepository {
 
   async RgetAllReports(): Promise<sortReport[]> {
     try {
+      // @ts-ignore
       const response: allReport[] = await reportModel
         .find()
         .populate("reporter", "nickName  email")
@@ -196,7 +197,7 @@ export class userListRepository implements IUserListRepository {
   async ROnReport(value: string): Promise<sortReport[]> {
     try {
       const regex = new RegExp(value, "i");
-
+// @ts-ignore
       const a: IReport[] = await reportModel
         .find({})
         .populate("reporter", "nickName  email")

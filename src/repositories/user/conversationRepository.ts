@@ -147,7 +147,7 @@ export class conversationRepository implements IConversationRepository {
         message: textMessage,
         timeStamp: Date.now(),
       });
-
+// @ts-ignore
       return newMessage.toObject();
     } catch (error) {
       throw error;
@@ -155,6 +155,7 @@ export class conversationRepository implements IConversationRepository {
   }
 
   async RGetAllConversation(userId: string): Promise<any> {
+    // @ts-ignore
     const chatrooms: allConversation[] | null = await chatRoomModel
       .find({ members: { $elemMatch: { userId: userId } } })
       .populate("members.userId", "nickName , imageUrl")

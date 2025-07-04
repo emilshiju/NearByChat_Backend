@@ -3,17 +3,18 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
 
-  port: 465,
-  secure: true, // Use SSL
-  auth: {
-    user: process.env.SMTP_MAIL || 'emilshiju10@gmail.com',
-    pass: process.env.SMTP_APP_PASS|| 'kjxh bmbj wvwo bgpb',
-  },
-  authMethod: "LOGIN", // Specify the authentication method
-});
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "emilshiju10@gmail.com",
+      pass: 'ppzp bgoz ibrh tsca', 
+    },
+    authMethod: "LOGIN",
+  });
+
 
 interface MailOptions {
   from: string;
@@ -21,6 +22,8 @@ interface MailOptions {
   subject: string;
   text: string;
 }
+
+
 
 const sendEmail = async (mailOptions: MailOptions) => {
   try {

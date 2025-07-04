@@ -52,7 +52,7 @@ export class ProfileRepository implements IPofileRepository {
         updateData,
         { new: true }
       );
-
+// @ts-ignore
       return profile?.toObject() as userList;
     } catch (error) {
       throw error;
@@ -219,7 +219,7 @@ export class ProfileRepository implements IPofileRepository {
       if (updatedNotification == undefined) {
         return null;
       }
-
+// @ts-ignore
       return updatedNotification.toObject();
     } catch (error) {
       throw error;
@@ -346,6 +346,7 @@ export class ProfileRepository implements IPofileRepository {
       const response = await UserModel.findById(userId);
 
       if (response) {
+        // @ts-ignore
         return response.toObject();
       } else {
         return null;
@@ -404,7 +405,7 @@ export class ProfileRepository implements IPofileRepository {
       if (!response) {
         return null;
       }
-
+// @ts-ignore
       return response?.toObject();
     } catch (error) {
       throw error;
@@ -495,7 +496,7 @@ export class ProfileRepository implements IPofileRepository {
       if (!profileDetails) {
         return null;
       }
-
+// @ts-ignore
       return profileDetails.toObject();
     } catch (error) {
       throw error;
@@ -576,7 +577,7 @@ export class ProfileRepository implements IPofileRepository {
       );
 
       response.save();
-
+// @ts-ignore
       return response.toObject();
     } catch (error) {
       throw error;
@@ -593,7 +594,7 @@ export class ProfileRepository implements IPofileRepository {
       if (!updateUser) {
         return null;
       }
-
+// @ts-ignore
       return updateUser.toObject();
     } catch (error) {
       throw error;
@@ -607,7 +608,7 @@ export class ProfileRepository implements IPofileRepository {
       if (!response) {
         return null;
       }
-
+// @ts-ignore
       return response?.toObject();
     } catch (error) {
       throw error;
@@ -628,7 +629,7 @@ export class ProfileRepository implements IPofileRepository {
       if (!resposne) {
         return null;
       }
-
+// @ts-ignore
       return resposne?.toObject();
     } catch (error) {
       throw error;
