@@ -1,0 +1,27 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const conversationInteractor_1 = require("../interactors/user/conversationInteractor");
+const conversationRepository_1 = require("../repositories/user/conversationRepository");
+const conversationController_1 = require("../controllers/user/conversationController");
+const route = express_1.default.Router();
+const Repository = new conversationRepository_1.conversationRepository();
+const Interactor = new conversationInteractor_1.conversationInteractor(Repository);
+const controller = new conversationController_1.conversationController(Interactor);
+const multer_1 = __importDefault(require("multer"));
+const rba_1 = require("../services/rba");
+const jwtService_1 = require("../services/jwtService");
+const storage = multer_1.default.diskStorage({});
+const upload = (0, multer_1.default)({ storage: storage });
+route.post('/getSingleChat', jwtService_1.verifyAccesToken, (0, rba_1.checkRole)(['user']), controller.chatRoom.bind(controller));
+route.post('/createChatRoom', jwtService_1.verifyAccesToken, (0, rba_1.checkRole)(['user']), controller.onCreateChatRoom.bind(controller));
+route.get('/getAllConversation', jwtService_1.verifyAccesToken, (0, rba_1.checkRole)(['user']), controller.getAllConversastion.bind(controller));
+route.post('/uploadChatPic', jwtService_1.verifyAccesToken, (0, rba_1.checkRole)(['user']), upload.single('image'), controller.onSaveChatImage.bind(controller));
+route.post('/clearChat', controller.onClearChat.bind(controller));
+route.delete('/deleteSingleChat', controller.onDeleteSingleChat.bind(controller));
+route.patch('/userTouserBlock', controller.OnuserTouserBlock.bind(controller));
+route.patch('/userTouserUnblock', controller.OnuserTouserUnblock.bind(controller));
+exports.default = route;
